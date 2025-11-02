@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace App\Resume\Application\DTO\Education;
 
+use App\General\Application\DTO\Interfaces\SymfonyUserAwareDtoInterface;
 use App\General\Application\DTO\RestDto;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\General\Domain\ValueObject\UserId;
+use App\General\Infrastructure\ValueObject\SymfonyUser;
 use App\Resume\Domain\Entity\Education as EducationEntity;
 use App\Resume\Domain\Entity\Resume;
 use DateTimeImmutable;
 use Override;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class EducationDto extends RestDto
+class EducationDto extends RestDto implements SymfonyUserAwareDtoInterface
 {
     protected static array $mappings = [
         'userId' => 'updateUserId',
@@ -50,6 +52,12 @@ class EducationDto extends RestDto
     protected ?int $position = null;
 
     protected ?string $description = null;
+
+    #[Override]
+    public function applySymfonyUser(SymfonyUser $symfonyUser): void
+    {
+        $this->setUserId($symfonyUser->getUserIdentifier());
+    }
 
     public function getResumeId(): ?string
     {

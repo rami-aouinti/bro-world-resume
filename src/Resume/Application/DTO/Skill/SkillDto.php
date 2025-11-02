@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Resume\Application\DTO\Skill;
 
+use App\General\Application\DTO\Interfaces\SymfonyUserAwareDtoInterface;
 use App\General\Application\DTO\RestDto;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\General\Domain\ValueObject\UserId;
+use App\General\Infrastructure\ValueObject\SymfonyUser;
 use App\Resume\Domain\Entity\Resume;
 use App\Resume\Domain\Entity\Skill as SkillEntity;
 use Override;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class SkillDto extends RestDto
+class SkillDto extends RestDto implements SymfonyUserAwareDtoInterface
 {
     protected static array $mappings = [
         'userId' => 'updateUserId',
@@ -37,6 +39,12 @@ class SkillDto extends RestDto
     protected ?string $level = null;
 
     protected ?int $position = null;
+
+    #[Override]
+    public function applySymfonyUser(SymfonyUser $symfonyUser): void
+    {
+        $this->setUserId($symfonyUser->getUserIdentifier());
+    }
 
     public function getResumeId(): ?string
     {

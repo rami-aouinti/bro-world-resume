@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Resume;
 
 use App\General\Domain\ValueObject\UserId;
+use App\General\Infrastructure\Service\LexikJwtAuthenticatorService;
 use App\Resume\Infrastructure\DataFixtures\ResumeFixtures;
 use App\Resume\Domain\Repository\ResumeRepositoryInterface;
 use App\Tests\TestCase\WebTestCase;
@@ -13,6 +14,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
+use function sprintf;
 
 class ResumeApiTest extends WebTestCase
 {
@@ -72,8 +74,8 @@ class ResumeApiTest extends WebTestCase
 
     public function testCanCreateResumeViaApi(): void
     {
+        $userId = Uuid::v4()->toRfc4122();
         $payload = [
-            'userId' => Uuid::v4()->toRfc4122(),
             'fullName' => 'Jamie Portfolio',
             'headline' => 'Product designer & motion tinkerer',
             'summary' => 'Designing intuitive journeys with a fondness for delightful micro-interactions.',
@@ -89,7 +91,7 @@ class ResumeApiTest extends WebTestCase
             self::API_URL_PREFIX . '/v1/resume',
             [],
             [],
-            $this->getJsonHeaders(),
+            $this->getAuthorizedHeaders($userId),
             json_encode($payload, JSON_THROW_ON_ERROR)
         );
 
@@ -103,7 +105,6 @@ class ResumeApiTest extends WebTestCase
     public function testCanAppendExperienceToResume(): void
     {
         $payload = [
-            'userId' => ResumeFixtures::USER_ID,
             'resumeId' => $this->resumeId,
             'company' => 'Bro Ventures',
             'role' => 'Advisory Engineer',
@@ -119,7 +120,7 @@ class ResumeApiTest extends WebTestCase
             self::API_URL_PREFIX . '/v1/experience',
             [],
             [],
-            $this->getJsonHeaders(),
+            $this->getAuthorizedHeaders(ResumeFixtures::USER_ID),
             json_encode($payload, JSON_THROW_ON_ERROR)
         );
 
@@ -129,5 +130,20 @@ class ResumeApiTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $experiences = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
         self::assertCount(3, $experiences);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function getAuthorizedHeaders(string $userId): array
+    {
+        static::bootKernel();
+        $tokenService = static::getContainer()->get(LexikJwtAuthenticatorService::class);
+        $token = $tokenService->getToken($userId);
+        static::ensureKernelShutdown();
+
+        return $this->getJsonHeaders() + [
+            'HTTP_AUTHORIZATION' => sprintf('Bearer %s', $token),
+        ];
     }
 }

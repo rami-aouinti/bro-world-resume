@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Resume\Application\DTO\Resume;
 
+use App\General\Application\DTO\Interfaces\SymfonyUserAwareDtoInterface;
 use App\General\Application\DTO\RestDto;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\General\Domain\ValueObject\UserId;
+use App\General\Infrastructure\ValueObject\SymfonyUser;
 use App\Resume\Domain\Entity\Resume as ResumeEntity;
 use Override;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class ResumeDto extends RestDto
+class ResumeDto extends RestDto implements SymfonyUserAwareDtoInterface
 {
     protected static array $mappings = [
         'userId' => 'updateUserId',
@@ -48,6 +50,12 @@ class ResumeDto extends RestDto
     protected ?string $avatarUrl = null;
 
     protected ?string $summary = null;
+
+    #[Override]
+    public function applySymfonyUser(SymfonyUser $symfonyUser): void
+    {
+        $this->setUserId($symfonyUser->getUserIdentifier());
+    }
 
     public function getUserId(): ?string
     {

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\General\Transport\ValueResolver;
 
 use App\General\Application\DTO\Interfaces\RestDtoInterface;
+use App\General\Application\DTO\Interfaces\SymfonyUserAwareDtoInterface;
+use App\General\Application\Service\AuthenticatorServiceInterface;
 use App\General\Transport\Rest\Controller;
 use App\General\Transport\Rest\ControllerCollection;
 use AutoMapperPlus\AutoMapperInterface;
@@ -13,6 +15,7 @@ use Override;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Throwable;
 
 use function count;
@@ -54,6 +57,7 @@ class RestDtoValueResolver implements ValueResolverInterface
     public function __construct(
         private readonly ControllerCollection $controllerCollection,
         private readonly AutoMapperInterface $autoMapper,
+        private readonly AuthenticatorServiceInterface $authenticatorService,
     ) {
     }
 
@@ -101,6 +105,18 @@ class RestDtoValueResolver implements ValueResolverInterface
             ->get($this->controllerName)
             ->getDtoClass($this->actionMethodMap[$this->actionName] ?? null);
 
-        yield $this->autoMapper->map($request, $dtoClass);
+        $dto = $this->autoMapper->map($request, $dtoClass);
+
+        if ($dto instanceof SymfonyUserAwareDtoInterface) {
+            $symfonyUser = $this->authenticatorService->getSymfonyUser();
+
+            if ($symfonyUser === null) {
+                throw new UnauthorizedHttpException('Bearer', 'Authentication is required to manage this resource.');
+            }
+
+            $dto->applySymfonyUser($symfonyUser);
+        }
+
+        yield $dto;
     }
 }
