@@ -35,10 +35,10 @@ class ResumePublicController
         return $this->responseHandler->createResponse($request, $payload, null, Response::HTTP_OK);
     }
 
-    #[Route(path: '/{userId}/experiences', requirements: ['userId' => SymfonyUuid::RFC_4122], methods: [Request::METHOD_GET])]
-    public function experiences(Request $request, string $userId): Response
+    #[Route(path: '/{userId}/experiences', methods: [Request::METHOD_GET])]
+    public function experiences(SymfonyUser $symfonyUser, Request $request): Response
     {
-        $profile = $this->projectionService->getResumeProfile(new UserId($userId));
+        $profile = $this->projectionService->getResumeProfile(new UserId($symfonyUser->getUserIdentifier()));
 
         if ($profile === null) {
             throw new NotFoundHttpException('Resume not found for provided userId.');
@@ -47,10 +47,10 @@ class ResumePublicController
         return $this->responseHandler->createResponse($request, $profile['experiences'], null, Response::HTTP_OK);
     }
 
-    #[Route(path: '/{userId}/education', requirements: ['userId' => SymfonyUuid::RFC_4122], methods: [Request::METHOD_GET])]
-    public function education(Request $request, string $userId): Response
+    #[Route(path: '/{userId}/education', methods: [Request::METHOD_GET])]
+    public function education(SymfonyUser $symfonyUser, Request $request): Response
     {
-        $profile = $this->projectionService->getResumeProfile(new UserId($userId));
+        $profile = $this->projectionService->getResumeProfile(new UserId($symfonyUser->getUserIdentifier()));;
 
         if ($profile === null) {
             throw new NotFoundHttpException('Resume not found for provided userId.');
@@ -59,10 +59,10 @@ class ResumePublicController
         return $this->responseHandler->createResponse($request, $profile['education'], null, Response::HTTP_OK);
     }
 
-    #[Route(path: '/{userId}/skills', requirements: ['userId' => SymfonyUuid::RFC_4122], methods: [Request::METHOD_GET])]
-    public function skills(Request $request, string $userId): Response
+    #[Route(path: '/{userId}/skills', methods: [Request::METHOD_GET])]
+    public function skills(SymfonyUser $symfonyUser, Request $request): Response
     {
-        $profile = $this->projectionService->getResumeProfile(new UserId($userId));
+        $profile = $this->projectionService->getResumeProfile(new UserId($symfonyUser->getUserIdentifier()));;
 
         if ($profile === null) {
             throw new NotFoundHttpException('Resume not found for provided userId.');
