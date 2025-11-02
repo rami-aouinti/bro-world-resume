@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Resume\Infrastructure\DataFixtures;
 
+use App\General\Domain\Rest\UuidHelper;
 use App\General\Domain\ValueObject\UserId;
 use App\Resume\Domain\Entity\Education;
 use App\Resume\Domain\Entity\Experience;
@@ -16,12 +17,13 @@ use Override;
 
 class ResumeFixtures extends Fixture
 {
-    public const string USER_ID = '4c3a7f10-5d5c-4d1f-9a3a-6b9c2d2d5b10';
+    public const string USER_ID = '20000000-0000-1000-8000-000000000001';
 
     #[Override]
     public function load(ObjectManager $manager): void
     {
-        $userId = new UserId(self::USER_ID);
+        $user = UuidHelper::fromString(self::USER_ID);
+        $userId = new UserId($user->toString());
 
         $resume = (new Resume())
             ->setUserId($userId)
