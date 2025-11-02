@@ -16,6 +16,10 @@ use App\General\Transport\Rest\Traits\Actions\Anon\UpdateAction;
 use App\Resume\Application\Resource\SkillResource;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Class SkillController
+ *
+ */
 #[Route(path: '/v1/skill')]
 class SkillController extends Controller
 {

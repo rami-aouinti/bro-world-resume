@@ -16,6 +16,10 @@ use App\General\Transport\Rest\Traits\Actions\Anon\UpdateAction;
 use App\Resume\Application\Resource\EducationResource;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Class EducationController
+ *
+ */
 #[Route(path: '/v1/education')]
 class EducationController extends Controller
 {
