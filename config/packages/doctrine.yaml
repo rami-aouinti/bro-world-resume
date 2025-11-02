@@ -44,12 +44,12 @@ doctrine:
                         dir: '%kernel.project_dir%/src/General/Domain/Entity'
                         prefix: 'App\General\Domain\Entity'
                         alias: General
-                    Blog:
+                    Resume:
                         type: attribute
                         is_bundle: false
-                        dir: '%kernel.project_dir%/src/Blog/Domain/Entity'
-                        prefix: 'App\Blog\Domain\Entity'
-                        alias: Blog
+                        dir: '%kernel.project_dir%/src/Resume/Domain/Entity'
+                        prefix: 'App\Resume\Domain\Entity'
+                        alias: Resume
                 dql:
                     datetime_functions:
                         datesub: DoctrineExtensions\Query\Mysql\DateSub
