@@ -11,9 +11,12 @@ use App\Resume\Application\Projection\ResumeProjectionService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Uid\Uuid as SymfonyUuid;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * Class ResumePublicController
+ *
+ */
 #[Route(path: '/public/resume')]
 class ResumePublicController
 {
@@ -35,7 +38,7 @@ class ResumePublicController
         return $this->responseHandler->createResponse($request, $payload, null, Response::HTTP_OK);
     }
 
-    #[Route(path: '/{userId}/experiences', methods: [Request::METHOD_GET])]
+    #[Route(path: '/experiences', methods: [Request::METHOD_GET])]
     public function experiences(SymfonyUser $symfonyUser, Request $request): Response
     {
         $profile = $this->projectionService->getResumeProfile(new UserId($symfonyUser->getUserIdentifier()));
@@ -47,7 +50,7 @@ class ResumePublicController
         return $this->responseHandler->createResponse($request, $profile['experiences'], null, Response::HTTP_OK);
     }
 
-    #[Route(path: '/{userId}/education', methods: [Request::METHOD_GET])]
+    #[Route(path: '/education', methods: [Request::METHOD_GET])]
     public function education(SymfonyUser $symfonyUser, Request $request): Response
     {
         $profile = $this->projectionService->getResumeProfile(new UserId($symfonyUser->getUserIdentifier()));;
@@ -59,7 +62,7 @@ class ResumePublicController
         return $this->responseHandler->createResponse($request, $profile['education'], null, Response::HTTP_OK);
     }
 
-    #[Route(path: '/{userId}/skills', methods: [Request::METHOD_GET])]
+    #[Route(path: '/skills', methods: [Request::METHOD_GET])]
     public function skills(SymfonyUser $symfonyUser, Request $request): Response
     {
         $profile = $this->projectionService->getResumeProfile(new UserId($symfonyUser->getUserIdentifier()));;
