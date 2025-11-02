@@ -1,9 +1,9 @@
-# Bro World Backend
+# Bro World Resume Service
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
 2. [Quick Start](#quick-start)
-3. [Architecture at a Glance](#architecture-at-a-glance)
+3. [Domain & Architecture](#domain--architecture)
 4. [Tech Stack](#tech-stack)
 5. [Environment Configuration](#environment-configuration)
 6. [Key Services & Tooling](#key-services--tooling)
@@ -15,64 +15,70 @@
 12. [Troubleshooting & Support](#troubleshooting--support)
 
 ## Project Overview
-Bro World Backend powers the Bro World blog and community experience. It exposes a JSON REST API built with Symfony 7 that covers blog creation and moderation, post publishing, audience engagement (likes, comments, reactions), and operational insights such as per-month statistics. The service follows a layered domain-driven design where transport controllers broker traffic to application resources and domain repositories, keeping business logic isolated from framework concerns.
+The Bro World Resume Service provides the curriculum vitae backend that powers [`bro-world-portfolio-main`](https://github.com/bro-world/bro-world-portfolio-main).
+It exposes a JSON REST API (Symfony 7, PHP 8.4) that stores and serves canonical resume data for every Bro World member.
+
+The platform is built around a **user-centric data model**: every resume record is uniquely tied to a `userId` UUID (stored as an ordered binary UUID for fast lookups).
+Each public query requires the `userId` and every private mutation verifies that incoming payloads reference the same identifier, ensuring perfect alignment between
+profile management tools and the public-facing portfolio.
 
 Key capabilities include:
-- CRUD endpoints for managing blogs and posts, backed by DTO-driven validation and reusable REST action traits.
-- Interaction workflows for visitors through comment and like resources, complete with messaging pipelines for notifications and search indexing.
-- Cached statistics endpoints that aggregate activity across the platform and serve low-latency analytics to authenticated consumers.
-- Automated background processing (messenger workers, cron jobs) to handle long-running tasks without blocking API requests.
+- CRUD endpoints for resumes plus the nested collections (experiences, education, skills) with DTO validation and optimistic field guarding.
+- Projection endpoints optimised for the public portfolio application, aggregating resume, experiences, education, and skills in a single network hop.
+- Strict `userId` ownership checks for write operations to prevent cross-account data leaks.
+- Scheduler hooks to refresh portfolio caches and keep public data in sync with private edits.
 
 ## Quick Start
 1. **Install prerequisites**: Docker, Docker Compose, and GNU Make must be available on your workstation.
-2. **Clone the repository** and copy the sample environment file:
+2. **Clone the repository** and bootstrap the environment variables:
    ```bash
-   git clone git@github.com:your-org/bro-world-backend-blog.git
-   cd bro-world-backend-blog
+   git clone git@github.com:bro-world/bro-world-resume.git
+   cd bro-world-resume
    cp .env .env.local
    ```
-3. **Adjust environment overrides** (database credentials, mailers, JWT passphrases) inside `.env.local` or create dedicated `.env.staging` / `.env.prod` files.
+3. **Adjust secrets and overrides** (`DATABASE_URL`, `JWT_PASSPHRASE`, etc.) in `.env.local` (or create `.env.staging` / `.env.prod`).
 4. **Build and start the development stack**:
    ```bash
    make build
    make start
    ```
-5. **Initialize application dependencies**:
+5. **Provision the application**:
    ```bash
    make composer-install
    make migrate
    make messenger-setup-transports
-   make create-roles-groups
    make generate-jwt-keys
    ```
-6. **Verify the installation** by opening http://localhost/api/doc to inspect the generated Swagger UI, or run `make phpunit` to confirm the suite executes successfully.
-7. **Stop services** with `make stop` and remove containers/volumes when necessary using `make down`.
+6. **Verify the installation**
+   - Visit `http://localhost/api/doc` for the generated OpenAPI documentation.
+   - Run the regression suite: `make phpunit`.
+7. **Stop services** with `make stop` and remove containers/volumes using `make down` when required.
 
-Refer to `make help` for a discoverable list of available automation commands.
+`make help` provides a full catalogue of orchestration commands.
 
-## Architecture at a Glance
-- **Transport layer**: Symfony controllers, HTTP middleware, and event subscribers expose REST endpoints and orchestrate request lifecycles.
-- **Application layer**: Services and resources perform orchestration tasks, mapping inputs to domain actions while handling validation via DTOs and Symfony forms/constraints.
-- **Domain layer**: Rich entities, aggregates, and domain events capture the core business rules for blogs, posts, comments, likes, and statistics.
-- **Infrastructure layer**: Doctrine repositories, message handlers, and adapters integrate with persistence, cache, queue, and search services.
-- **Cross-cutting concerns**: Messenger transports, asynchronous workers, and cron jobs (configured through `migrations/` and `config/packages/messenger`) maintain system health and throughput.
+## Domain & Architecture
+- **Domain layer** – Entities such as `Resume`, `Experience`, `Education`, and `Skill` represent the source of truth. A `Resume` owns the other aggregates, and all records are keyed by the same `userId` UUID.
+- **Application layer** – `*Resource` services expose transactional CRUD functionality with DTO validation, `userId` ownership checks, and lifecycle hooks that maintain the resume relationships.
+- **Transport layer** – Attribute-based controllers combine reusable REST traits for the authenticated back-office API (`/api/v1/...`) and thin public projection endpoints (`/api/public/resume/...`).
+- **Infrastructure layer** – Doctrine repositories and data fixtures provide persistence, while the scheduler bundle drives recurring cache refresh commands for portfolio synchronisation.
 
-Consult the `docs/` directory for deep dives into development workflow, messaging, API schema management, and IDE integration tips.
+See `docs/api-endpoints.md` for a detailed map of use cases, request/response payloads, and constraint rules (including the ubiquitous `userId`).
 
 ## Tech Stack
-The application ships as a containerized environment orchestrated with Docker Compose. Major components are:
-- **Symfony 7 + PHP 8.4 FPM** for the API runtime and background workers.
-- **Nginx** as the HTTP entry point.
-- **MySQL 8** for relational persistence.
-- **Redis** for caching, locks, and queues.
-- **RabbitMQ 4** for asynchronous messaging.
-- **Elasticsearch 7 + Kibana** for search indexing and observability dashboards.
-- **Mailpit** for capturing outbound email in development.
+The application ships as a containerised environment orchestrated via Docker Compose. Core components include:
+- **Symfony 7 + PHP 8.4 FPM** for the HTTP API and background workers.
+- **Nginx** as the gateway.
+- **MySQL 8** for relational persistence (with ordered UUID columns).
+- **Redis** for caching, lock management, and queueing.
+- **RabbitMQ 4** for async messaging.
+- **Elasticsearch 7 + Kibana** for search/observability dashboards.
+- **Mailpit** to capture outbound email during development.
 
-Supporting tools include PHPUnit, Easy Coding Standard, PHPStan, PHP Insights, Rector, PhpMetrics, PhpMD, PhpCPD, Composer QA utilities, and Qodana configuration for deeper analysis.
+Supporting developer tooling: PHPUnit, Easy Coding Standard, PHPStan, PHP Insights, Rector, PhpMetrics, PhpMD, PhpCPD, Composer QA commands, and JetBrains Qodana integration.
 
 ## Environment Configuration
-The `compose.yaml`, `compose-staging.yaml`, `compose-prod.yaml`, and `compose-test-ci.yaml` files define isolated stacks for local development, staging mirroring, production-ready simulations, and CI/testing respectively. The Makefile wraps the Docker orchestration with environment-specific targets:
+The Compose files (`compose.yaml`, `compose-staging.yaml`, `compose-prod.yaml`, `compose-test-ci.yaml`) deliver isolated stacks for local, staging, production-like, and CI contexts.
+GNU Make targets wrap the orchestration:
 
 | Stage | Build | Start | Stop | Tear Down |
 | --- | --- | --- | --- | --- |
@@ -81,97 +87,90 @@ The `compose.yaml`, `compose-staging.yaml`, `compose-prod.yaml`, and `compose-te
 | Staging | `make build-staging` | `make start-staging` | `make stop-staging` | `make down-staging` |
 | Production | `make build-prod` | `make start-prod` | `make stop-prod` | `make down-prod` |
 
-Other helpful targets:
-- `make generate-jwt-keys` to provision JWT key pairs for authentication.
-- `make messenger-setup-transports`, `make create-roles-groups`, `make migrate`, and `make migrate-cron-jobs` to prepare databases, background jobs, and security ACLs.
-- `make ssh`, `make ssh-nginx`, `make ssh-mysql`, etc. to open shells inside running containers.
-- `make logs-*` to stream service logs from the host.
+Additional helpers:
+- `make generate-jwt-keys` to provision signing keys.
+- `make messenger-setup-transports`, `make migrate`, `make migrate-cron-jobs` for persistence and background workers.
+- `make ssh-*` targets to open shell sessions inside running containers.
+- `make logs-*` to tail service logs.
 
 ## Key Services & Tooling
 ### Local Services
-Once the development stack is running you can reach supporting UIs at:
-- Swagger UI: http://localhost/api/doc
-- RabbitMQ management: http://localhost:15672
-- Kibana: http://localhost:5601
-- Mailpit: http://localhost:8025
+Once started, local dashboards are available at:
+- OpenAPI (Swagger UI): `http://localhost/api/doc`
+- RabbitMQ management: `http://localhost:15672`
+- Kibana: `http://localhost:5601`
+- Mailpit inbox: `http://localhost:8025`
 
 ### Monitoring & Diagnostics
-- Doctrine profiling and Symfony debug toolbar are enabled in the local environment for rapid iteration.
-- Logs from PHP-FPM, Nginx, MySQL, and worker containers can be tailed with `make logs-<service>`.
-- Kibana dashboards surface indexed search data and application logs through the ELK stack.
+- Doctrine profiling and the Symfony debug toolbar are enabled in `dev` for rapid feedback.
+- Docker logs are accessible through `make logs-<service>`.
+- Kibana dashboards aggregate search indices and application logs.
 
 ## Running Tests & Quality Gates
-Execute the full PHPUnit suite from the host with:
+Execute the PHPUnit suite from the host with:
 ```bash
 make phpunit
 ```
 
-Supplementary quality tooling is available through dedicated targets:
+Additional quality tooling:
 - Static analysis: `make phpstan`
-- Coding standards: `make ecs` (fixable violations via `make ecs-fix`) and `make phpcs`
+- Coding standards: `make ecs` (auto-fix via `make ecs-fix`) and `make phpcs`
 - Architecture metrics: `make phpmetrics`
 - Code smells: `make phpmd`
-- Duplicate detection: `make phpcpd` / `make phpcpd-html-report`
+- Duplicate detection: `make phpcpd` or `make phpcpd-html-report`
 - Dependency hygiene: `make composer-normalize`, `make composer-validate`, `make composer-unused`, `make composer-require-checker`
 - Holistic insights: `make phpinsights`
 
-You can combine targets (for example `make qa`) to run curated bundles of quality gates prior to opening a pull request.
+Use composite targets such as `make qa` before opening a pull request.
 
 ## API Usage
-All API routes are served beneath `/api` with versioned prefixes. Highlights include:
-- `/api/v1/blog` for blog administration (create, update, patch, list, fetch by id, id collection, counts).
-- `/api/v1/post` for post lifecycle management with similar CRUD semantics.
-- `/api/v1/statistics` for cached per-month aggregates of posts, blogs, likes, and comments.
+All routes live beneath `/api`. Back-office endpoints reside under `/api/v1/...` and accept authenticated clients (JWT bearer tokens or API keys). Public projection routes are under `/api/public/resume/...` and are anonymous but still gated by a valid `userId` UUID in the URL.
 
-The platform uses JWT bearer tokens. Generate keys via `make generate-jwt-keys`, configure issuers/clients to request tokens, and send authenticated requests with the `Authorization: Bearer <token>` header. Anonymous access is limited to explicitly whitelisted public routes.
+Highlights:
+- `POST /api/v1/resume` – Create a resume for a user (`userId` is mandatory and must remain unique).
+- `PATCH /api/v1/resume/{id}` – Update the resume headline, summary, contact fields, etc. Ownership is validated via `userId`.
+- `POST /api/v1/experience|education|skill` – Append nested entries to an existing resume. Each payload must carry the same `userId` as the resume it references.
+- `GET /api/public/resume/{userId}` – Fetch the full projection consumed by the portfolio frontend (resume + collections in one response).
 
-OpenAPI documentation is generated through NelmioApiDocBundle and exposed in the Swagger UI, making it simple to explore payload schemas, available query parameters, and authentication requirements.
+Refer to `docs/api-endpoints.md` for complete payload definitions and constraint matrices.
 
 ## Configuration Reference
 ### Environment Variables
-The table below captures frequent overrides you may want to adjust for each environment. Defaults originate in `.env` and can be overridden by `.env.local`, `.env.staging`, or `.env.prod`.
-
 | Variable | Purpose |
 | --- | --- |
-| `APP_ENV` | Chooses the Symfony runtime environment (`dev`, `test`, `prod`). |
-| `APP_DEBUG` | Enables debug mode and verbose error output in non-production environments. |
-| `DATABASE_URL` | Defines the DSN for the MySQL instance used by Doctrine ORM. |
-| `MESSENGER_TRANSPORT_DSN` | Configures the default RabbitMQ transport for asynchronous messages. |
-| `REDIS_URL` | Points to the Redis cache store for sessions, locks, and cache pools. |
-| `ELASTICSEARCH_HOST` | Hostname for the Elasticsearch node used by the search subsystem. |
-| `MAILER_DSN` | Controls outbound mail delivery (Mailpit in development). |
-| `JWT_PASSPHRASE` | Passphrase used to protect generated JWT private keys. |
+| `APP_ENV` | Chooses the runtime environment (`dev`, `test`, `prod`). |
+| `APP_DEBUG` | Enables debug mode in non-production contexts. |
+| `DATABASE_URL` | Doctrine DSN for MySQL. |
+| `MESSENGER_TRANSPORT_DSN` | RabbitMQ transport for async messages. |
+| `REDIS_URL` | Redis connection string for cache pools and locks. |
+| `ELASTICSEARCH_HOST` | Hostname for Elasticsearch. |
+| `MAILER_DSN` | Outbound mail transport (Mailpit in development). |
+| `JWT_PASSPHRASE` | Protects generated JWT private keys. |
 
 ### Database & Migrations
-- Run `make migrate` (or `make migrate-no-test` in production scenarios) after modifying Doctrine entities or schema mappings.
-- Seed reference data by adding migrations or custom fixtures. Doctrine Fixtures Bundle can be enabled if richer data bootstrapping is required.
-- Scheduled jobs can be registered through the cron job migrations located in `migrations/`.
+- Run `make migrate` (or `make migrate-no-test` for production) after adjusting Doctrine metadata.
+- Fixture data is loaded through `App\Resume\Infrastructure\DataFixtures\ResumeFixtures` and ensures a canonical resume is available for demos/tests.
+- Scheduler migrations register resume cache refresh commands to keep the portfolio layer hot.
 
 ### Assets & Frontend Integrations
-- Asset building is orchestrated through Symfony AssetMapper and the `assets/` directory. Use `make asset-install` and `make asset-dev-server` for live reload workflows.
-- Frontend consumers should rely on the documented REST endpoints and, where applicable, any HAL/JSON:API conventions outlined in the API specification.
+- Asset management relies on Symfony AssetMapper (`assets/`). Use `make asset-install` and `make asset-dev-server` for iterative frontend work.
+- Frontend clients should rely on the documented REST APIs. Every resume-related call must supply the correct `userId` UUID; cache keys and projections are derived from it.
 
 ## Deployment Considerations
-- Prepare environment-specific overrides in `.env.prod` or `.env.staging` for secrets, database endpoints, queues, and cache backends.
-- Use `make env-prod` or `make env-staging` to compile cached Symfony configuration (`.env.local.php`).
-- Build immutable images with `make build-prod` (or staging equivalent) before pushing to registries; then orchestrate with the matching Compose file or translate settings into your target infrastructure (Kubernetes, ECS, etc.).
-- Initialize production data stores with the migration and setup targets (`make migrate-no-test`, `make messenger-setup-transports`, `make create-roles-groups`, etc.).
-- Monitor asynchronous workloads (messenger consumers) by running the Supervisord container or provisioning equivalent workers in your platform.
-- Review Elasticsearch license options and adjust `docker/elasticsearch/config/elasticsearch.yml` if you need trial-only features before shipping.
+- Prepare environment-specific overrides (`.env.prod`, `.env.staging`) for secrets and backing services.
+- Use `make env-prod` / `make env-staging` to compile cached Symfony configuration (`.env.local.php`).
+- Build immutable images with `make build-prod` (or stage equivalent) before publishing to registries.
+- Initialise databases with the migration targets plus the scheduler commands that warm resume caches.
+- Provision messenger consumers (e.g., via Supervisord) to process background work.
+- Review Elasticsearch licensing if enabling premium features; adjust `docker/elasticsearch/config/elasticsearch.yml` accordingly.
 
 ## Contribution Guidelines
-- Follow PSR-12 and Symfony best practices, applying strict types and rich domain models.
-- Keep transport (controllers, subscribers, handlers), application (resources, services), infrastructure (repositories), and domain (entities, messages) layers decoupled and testable.
-- Accompany features with application, integration, and unit tests. Target automation coverage before opening pull requests.
-- Run `make ecs`, `make phpstan`, and `make phpunit` locally to catch regressions early, then use additional QA targets as needed.
-- Document non-trivial workflows or architectural decisions in the `docs/` directory and update the Swagger schema for new endpoints.
-- Follow the conventional Git workflow: branch from `main`, rebase frequently, and provide detailed pull request descriptions summarizing business impact and testing evidence.
+- Follow PSR-12 and the existing coding standard (enforced via ECS/PHPCS).
+- Write tests for every behavioural change. Resume workflows must always validate the `userId` contract.
+- Keep documentation (`readme.md`, `docs/api-endpoints.md`) up to date with new endpoints or payload adjustments.
 
 ## Troubleshooting & Support
-- **Containers fail to start**: Run `make logs` or `docker compose logs` to inspect startup failures. Confirm ports in use do not conflict with services already running on the host.
-- **Database migrations fail**: Verify MySQL readiness (`make ssh-mysql`) and ensure credentials match `DATABASE_URL`. Re-run migrations after clearing the cache with `make cache-clear` if Doctrine metadata changed.
-- **JWT issues**: Delete old keys (`rm -rf config/jwt/*`) and rerun `make generate-jwt-keys`, confirming the passphrase matches your environment variables.
-- **Worker backlog**: Run `make messenger-consume` locally or scale worker containers in staging/production to handle message spikes.
-- **Elasticsearch connectivity**: Ensure the cluster is running (`make logs-elasticsearch`) and that index templates in `docker/elasticsearch/config` match the expected version.
-
-For deeper dives, see the topic guides in `docs/` (development workflow, testing, Postman collections, messenger usage, Swagger, IDE integration) and leverage `make help` to inspect the automation surface area. Questions and enhancements can be proposed through Git issues or the team's communication channels.
+- Run `make logs-php` to inspect API container logs.
+- Use `bin/console debug:router` to verify routes, especially when introducing new resume endpoints.
+- If migrations fail, confirm the database connection string and ensure the user has DDL privileges.
+- For help, contact the Bro World platform team via the internal Slack channel `#bro-world-backend`.
