@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Resume\Transport\Controller\Api\Public;
 
 use App\General\Domain\ValueObject\UserId;
+use App\General\Infrastructure\ValueObject\SymfonyUser;
 use App\General\Transport\Rest\Interfaces\ResponseHandlerInterface;
 use App\Resume\Application\Projection\ResumeProjectionService;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,10 +23,10 @@ class ResumePublicController
     ) {
     }
 
-    #[Route(path: '/{userId}', requirements: ['userId' => SymfonyUuid::RFC_4122], methods: [Request::METHOD_GET])]
-    public function profile(Request $request, string $userId): Response
+    #[Route(path: '/', methods: [Request::METHOD_GET])]
+    public function profile(SymfonyUser $symfonyUser, Request $request): Response
     {
-        $payload = $this->projectionService->getResumeProfile(new UserId($userId));
+        $payload = $this->projectionService->getResumeProfile(new UserId($symfonyUser->getUserIdentifier()));
 
         if ($payload === null) {
             throw new NotFoundHttpException('Resume not found for provided userId.');
