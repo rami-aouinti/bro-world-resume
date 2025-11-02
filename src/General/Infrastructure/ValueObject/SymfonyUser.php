@@ -13,10 +13,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 final readonly class SymfonyUser implements UserInterface
 {
     public function __construct(
-        private ?string $userIdentifier,
+        private string $userIdentifier,
         private ?string $fullName,
         private ?string $avatar,
-        private ?array $roles
+        private array $roles
     ) {
     }
 
