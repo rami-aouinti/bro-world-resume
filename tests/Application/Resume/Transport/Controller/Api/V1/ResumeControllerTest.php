@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Application\Resume\Transport\Controller\Api\V1;
 
 use App\Tests\TestCase\WebTestCase;
+use App\General\Infrastructure\Service\LexikJwtAuthenticatorService;
 use Ramsey\Uuid\Uuid;
 use const JSON_THROW_ON_ERROR;
 
@@ -21,13 +22,13 @@ class ResumeControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $userId = Uuid::uuid4()->toString();
+        $authHeaders = $this->getAuthHeaders($userId);
 
         $client->request(
             method: 'POST',
             uri: '/api/v1/resume',
-            server: $this->getJsonHeaders(),
+            server: $authHeaders,
             content: (string)json_encode([
-                'userId' => $userId,
                 'fullName' => 'Casey Resume',
                 'headline' => 'Product-minded engineer',
                 'summary' => 'Shaping delightful developer experiences.',
@@ -48,9 +49,8 @@ class ResumeControllerTest extends WebTestCase
         $client->request(
             method: 'POST',
             uri: '/api/v1/experience',
-            server: $this->getJsonHeaders(),
+            server: $authHeaders,
             content: (string)json_encode([
-                'userId' => $userId,
                 'resumeId' => $resumeId,
                 'company' => 'Bro World Studios',
                 'role' => 'Principal Engineer',
@@ -67,9 +67,8 @@ class ResumeControllerTest extends WebTestCase
         $client->request(
             method: 'POST',
             uri: '/api/v1/education',
-            server: $this->getJsonHeaders(),
+            server: $authHeaders,
             content: (string)json_encode([
-                'userId' => $userId,
                 'resumeId' => $resumeId,
                 'school' => 'Bro World Academy',
                 'degree' => 'MSc Software Engineering',
@@ -86,9 +85,8 @@ class ResumeControllerTest extends WebTestCase
         $client->request(
             method: 'POST',
             uri: '/api/v1/skill',
-            server: $this->getJsonHeaders(),
+            server: $authHeaders,
             content: (string)json_encode([
-                'userId' => $userId,
                 'resumeId' => $resumeId,
                 'name' => 'Symfony',
                 'category' => 'Backend',
@@ -101,9 +99,8 @@ class ResumeControllerTest extends WebTestCase
         $client->request(
             method: 'PATCH',
             uri: sprintf('/api/v1/resume/%s', $resumeId),
-            server: $this->getJsonHeaders(),
+            server: $authHeaders,
             content: (string)json_encode([
-                'userId' => $userId,
                 'headline' => 'Principal engineer & resume curator',
                 'summary' => 'Curating dependable resume experiences.',
             ])
@@ -116,7 +113,7 @@ class ResumeControllerTest extends WebTestCase
         $client->request(
             method: 'GET',
             uri: sprintf('/api/v1/resume/%s', $resumeId),
-            server: $this->getJsonHeaders(),
+            server: $authHeaders,
         );
         $this->assertResponseIsSuccessful();
         $fetched = json_decode((string)$client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
@@ -141,5 +138,20 @@ class ResumeControllerTest extends WebTestCase
         self::assertSame('Bro World Studios', $profile['experiences'][0]['company']);
         self::assertTrue($profile['experiences'][0]['isCurrent']);
         self::assertSame('Symfony', $profile['skills'][0]['name']);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function getAuthHeaders(string $userId): array
+    {
+        self::bootKernel();
+        $tokenService = self::getContainer()->get(LexikJwtAuthenticatorService::class);
+        $token = $tokenService->getToken($userId);
+        self::ensureKernelShutdown();
+
+        return $this->getJsonHeaders() + [
+            'HTTP_AUTHORIZATION' => sprintf('Bearer %s', $token),
+        ];
     }
 }
