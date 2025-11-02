@@ -18,11 +18,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  */
 #[Route(path: '/public/resume')]
-class ResumePublicController
+readonly class ResumePublicController
 {
     public function __construct(
-        private readonly ResumeProjectionService $projectionService,
-        private readonly ResponseHandlerInterface $responseHandler,
+        private ResumeProjectionService $projectionService,
+        private ResponseHandlerInterface $responseHandler,
     ) {
     }
 
