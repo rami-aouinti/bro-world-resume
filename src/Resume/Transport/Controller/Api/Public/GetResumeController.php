@@ -9,6 +9,7 @@ use App\Resume\Domain\Repository\ResumeRepositoryInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -17,6 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * @package App\Tool\Transport\Controller\Api
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
+#[AsController]
 #[Route('/platform/resume', name: 'resume_api_platform_')]
 class GetResumeController extends AbstractController
 {
