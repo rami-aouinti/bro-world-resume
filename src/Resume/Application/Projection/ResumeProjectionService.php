@@ -14,13 +14,16 @@ use App\Resume\Domain\Entity\Experience;
 use App\Resume\Domain\Entity\Resume;
 use App\Resume\Domain\Entity\Skill;
 
-class ResumeProjectionService
+/**
+ * Class ResumeProjectionService
+ */
+readonly class ResumeProjectionService
 {
     public function __construct(
-        private readonly ResumeResource $resumeResource,
-        private readonly ExperienceResource $experienceResource,
-        private readonly EducationResource $educationResource,
-        private readonly SkillResource $skillResource,
+        private ResumeResource $resumeResource,
+        private ExperienceResource $experienceResource,
+        private EducationResource $educationResource,
+        private SkillResource $skillResource,
     ) {
     }
 

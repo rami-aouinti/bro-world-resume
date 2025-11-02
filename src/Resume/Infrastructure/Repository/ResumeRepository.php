@@ -9,6 +9,7 @@ use App\General\Domain\ValueObject\UserId;
 use App\General\Infrastructure\Repository\BaseRepository;
 use App\Resume\Domain\Entity\Resume;
 use App\Resume\Domain\Repository\ResumeRepositoryInterface;
+use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\Persistence\ManagerRegistry;
 
 class ResumeRepository extends BaseRepository implements ResumeRepositoryInterface
@@ -30,6 +31,9 @@ class ResumeRepository extends BaseRepository implements ResumeRepositoryInterfa
         self::$entityManager = $managerRegistry->getManagerForClass(self::$entityName);
     }
 
+    /**
+     * @throws NotSupported
+     */
     public function findOneByUserId(UserId $userId): ?Resume
     {
         return $this->findOneBy([

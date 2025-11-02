@@ -16,6 +16,9 @@ use Override;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
+/**
+ * Class ResumeResource
+ */
 class ResumeResource extends RestResource
 {
     public function __construct(
@@ -39,12 +42,25 @@ class ResumeResource extends RestResource
         return $this->resumeRepository->findOneByUserId($userId);
     }
 
+    /**
+     * @param RestDtoInterface $restDto
+     * @param EntityInterface  $entity
+     *
+     * @return void
+     */
     #[Override]
     public function beforeCreate(RestDtoInterface $restDto, EntityInterface $entity): void
     {
         $this->assertDtoBelongsToCurrentUser($restDto);
     }
 
+    /**
+     * @param string           $id
+     * @param RestDtoInterface $restDto
+     * @param EntityInterface  $entity
+     *
+     * @return void
+     */
     #[Override]
     public function beforeUpdate(string &$id, RestDtoInterface $restDto, EntityInterface $entity): void
     {
@@ -52,6 +68,13 @@ class ResumeResource extends RestResource
         $this->assertDtoBelongsToCurrentUser($restDto);
     }
 
+    /**
+     * @param string           $id
+     * @param RestDtoInterface $restDto
+     * @param EntityInterface  $entity
+     *
+     * @return void
+     */
     #[Override]
     public function beforePatch(string &$id, RestDtoInterface $restDto, EntityInterface $entity): void
     {
@@ -59,12 +82,24 @@ class ResumeResource extends RestResource
         $this->assertDtoBelongsToCurrentUser($restDto);
     }
 
+    /**
+     * @param string          $id
+     * @param EntityInterface $entity
+     *
+     * @return void
+     */
     #[Override]
     public function beforeDelete(string &$id, EntityInterface $entity): void
     {
         $this->assertResumeOwnership($entity);
     }
 
+    /**
+     * @param string               $id
+     * @param EntityInterface|null $entity
+     *
+     * @return void
+     */
     #[Override]
     public function afterFindOne(string &$id, ?EntityInterface $entity = null): void
     {
@@ -73,6 +108,13 @@ class ResumeResource extends RestResource
         }
     }
 
+    /**
+     * @param array   $criteria
+     * @param Request $request
+     * @param string  $method
+     *
+     * @return void
+     */
     public function processCriteria(array &$criteria, Request $request, string $method): void
     {
         $criteria['userId'] = (string)$this->getCurrentUserId();

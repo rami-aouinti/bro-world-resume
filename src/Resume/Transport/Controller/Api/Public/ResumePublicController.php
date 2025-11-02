@@ -15,7 +15,6 @@ use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class ResumePublicController
- *
  */
 #[Route(path: '/public/resume')]
 readonly class ResumePublicController
