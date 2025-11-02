@@ -1,216 +1,201 @@
-# Endpoints de l'API Blog
+# Endpoints de l'API Resume
 
-Ce document résume les routes HTTP exposées par les contrôleurs API du module Blog ainsi que les rôles attendus et les payloads principaux.
+Ce document synthétise les routes HTTP exposées par le domaine Resume. Chaque workflow repose sur le `userId` (UUID v4 recommandé) qui identifie sans ambiguïté le propriétaire du CV. Toute requête de création ou de mise à jour doit fournir ce `userId`; les projections publiques l'utilisent comme clé de recherche.
 
-## Blog (`/v1/blog`)
+## Cas d’usage principaux
+1. **Onboarding d’un nouvel utilisateur** : création du CV de référence via `/api/v1/resume`, puis ajout des premières expériences/formations/compétences.
+2. **Mise à jour continue** : modifications incrémentales (PATCH) du CV, des expériences, ou des compétences lorsque le membre ajoute une mission ou une certification.
+3. **Publication sur le portfolio** : lecture publique du profil via `/api/public/resume/{userId}` consommé par `bro-world-portfolio-main`.
+4. **Synchronisation programmée** : commandes de scheduler qui régénèrent les caches et projections pour un `userId` donné.
 
-| Méthode | Chemin | Description | Rôle minimum |
+## Résumé (`/api/v1/resume`)
+
+| Méthode | Chemin | Description | Particularités liées à `userId` |
 | --- | --- | --- | --- |
-| GET | `/v1/blog/count` | Compter les blogs. | `ROLE_ADMIN` |
-| GET | `/v1/blog` | Lister les blogs. | `ROLE_ADMIN` |
-| GET | `/v1/blog/ids` | Récupérer uniquement les identifiants. | `ROLE_ADMIN` |
-| GET | `/v1/blog/{id}` | Obtenir un blog spécifique (UUID v1). | `ROLE_ADMIN` |
-| POST | `/v1/blog` | Créer un blog. | `ROLE_ROOT` |
-| PUT | `/v1/blog/{id}` | Remplacer un blog existant. | `ROLE_ROOT` |
-| PATCH | `/v1/blog/{id}` | Mettre à jour partiellement un blog. | `ROLE_ROOT` |
-| DELETE | `/v1/blog/{id}` | Supprimer un blog. | `ROLE_ROOT` |
+| GET | `/api/v1/resume` | Lister les CV avec filtres, pagination et recherche plein texte. | Filtre possible via `?search=`, pas de filtre direct par `userId` (utiliser `GET /api/v1/resume/{id}`). |
+| GET | `/api/v1/resume/{id}` | Obtenir le CV par son identifiant primaire. | La réponse inclut le `userId` qui doit rester unique. |
+| POST | `/api/v1/resume` | Créer un CV. | `userId` obligatoire, unique. Toute tentative de réutilisation renvoie HTTP 409. |
+| PUT | `/api/v1/resume/{id}` | Remplacer l’intégralité du CV. | Le payload doit reprendre le même `userId` qu’à la création. |
+| PATCH | `/api/v1/resume/{id}` | Mise à jour partielle (headline, summary, contact…). | Le DTO valide que le `userId` fourni correspond à celui stocké. |
+| DELETE | `/api/v1/resume/{id}` | Supprimer un CV ainsi que ses collections associées. | Libère le `userId` pour une future recréation. |
 
-### Exemple de payload JSON pour la création / mise à jour d'un blog
-
+### Payload JSON (création / mise à jour complète)
 ```json
 {
-  "title": "Engineering Insights",
-  "blogSubtitle": "L'actualité de l'équipe",
-  "author": "8b21f060-7d8d-11ee-b962-0242ac120002",
-  "logo": "https://cdn.example.com/blogs/eng/logo.svg",
-  "teams": ["platform", "data"],
-  "visible": true,
-  "slug": "engineering-insights",
-  "color": "#005BBB"
+  "userId": "9a7a5ad7-98b1-4ebc-8dcd-8da4cb7ff65f",
+  "fullName": "Alex \"Bro\" Devaux",
+  "headline": "Full-stack artisan & indie builder",
+  "summary": "Crafting joyful experiences across web and native platforms.",
+  "location": "Montréal, QC",
+  "email": "hello@bro.dev",
+  "phone": "+1 555 0100 200",
+  "website": "https://bro.dev",
+  "avatarUrl": "https://cdn.example.com/bro/avatar.png"
 }
 ```
 
-## Post (`/v1/post`)
+### Contraintes principales
+- `userId` : UUID valide (`@Assert\Uuid`), unique, non nul.
+- `fullName` et `headline` : `@Assert\NotBlank`, longueur ≤ 255 caractères.
+- `email`, `website`, `avatarUrl` : contraintes de format (`@Assert\Email`, `@Assert\Url`).
+- `phone` : longueur ≤ 64 caractères (format libre).
 
-| Méthode | Chemin | Description | Rôle minimum |
+## Expérience (`/api/v1/experience`)
+
+| Méthode | Chemin | Description | Contraintes `userId` |
 | --- | --- | --- | --- |
-| GET | `/v1/post/count` | Compter les posts. | `ROLE_ADMIN` |
-| GET | `/v1/post` | Lister les posts. | `ROLE_ADMIN` |
-| GET | `/v1/post/ids` | Récupérer les identifiants des posts. | `ROLE_ADMIN` |
-| GET | `/v1/post/{id}` | Obtenir un post spécifique (UUID v1). | `ROLE_ADMIN` |
-| POST | `/v1/post` | Créer un post. | `ROLE_ROOT` |
-| PUT | `/v1/post/{id}` | Remplacer un post existant. | `ROLE_ROOT` |
-| PATCH | `/v1/post/{id}` | Mettre à jour partiellement un post. | `ROLE_ROOT` |
+| GET | `/api/v1/experience` | Lister les expériences (filtrables par critères génériques). | Réservé aux usages internes (jointure via `resumeId`). |
+| GET | `/api/v1/experience/{id}` | Obtenir une expérience. | Retourne le `resumeId` et le `userId` associé. |
+| POST | `/api/v1/experience` | Créer une expérience liée à un CV. | `userId` et `resumeId` obligatoires et doivent correspondre. |
+| PATCH | `/api/v1/experience/{id}` | Mise à jour partielle. | Les hooks refusent tout `userId` différent de celui du CV parent. |
+| DELETE | `/api/v1/experience/{id}` | Supprimer une expérience. | Libère la position (`position`) dans l’ordre d’affichage. |
 
-### Exemple de payload JSON pour la création / mise à jour d'un post
-
+### Payload JSON minimal pour la création
 ```json
 {
-  "title": "Comment optimiser Symfony",
-  "summary": "Un tour d'horizon des pratiques de performance.",
-  "content": "<p>Voici les étapes...</p>",
-  "url": "https://example.com/blog/optimiser-symfony",
-  "author": "985b95e0-7d8d-11ee-b962-0242ac120002",
-  "blog": "8b21f060-7d8d-11ee-b962-0242ac120002",
-  "tags": ["symfony", "performance"],
-  "mediaIds": [
-    "a6cfb33c-7d8d-11ee-b962-0242ac120002"
-  ],
-  "publishedAt": "2024-01-15T09:30:00+00:00"
+  "userId": "9a7a5ad7-98b1-4ebc-8dcd-8da4cb7ff65f",
+  "resumeId": "b4de4b08-6e8f-4ebd-a6e7-4b797d7d8c92",
+  "company": "Bro World Studios",
+  "role": "Founder & Principal Engineer",
+  "startDate": "2019-01-01",
+  "endDate": null,
+  "isCurrent": true,
+  "position": 0,
+  "location": "Remote",
+  "description": "Leading product, code and community initiatives."
 }
 ```
 
-> `blog` fait référence à l'identifiant du blog parent et `mediaIds` liste des UUID de médias déjà existants. Les champs `summary`, `content` et `title` peuvent être laissés à `null` pour un brouillon, mais doivent respecter les contraintes de longueur lorsqu'ils sont fournis.
+### Validation
+- `resumeId` : UUID existant. Retourne HTTP 404 si le CV n’existe pas.
+- `userId` : doit matcher le `userId` du CV (sinon HTTP 400 « The provided userId does not match the resume owner. »).
+- `startDate` / `endDate` : format `YYYY-MM-DD`. Si `isCurrent = true`, `endDate` est automatiquement vidée.
+- `position` : entier ≥ 0, utilisé pour l’ordre d’affichage.
 
-## Commentaire (plateforme `/v1/platform`)
+## Formation (`/api/v1/education`)
 
-Ces routes sont utilisées par l'interface "plateforme" et requièrent que l'utilisateur soit pleinement authentifié (`IS_AUTHENTICATED_FULLY`).
-
-| Méthode | Chemin | Description | Rôle minimum |
+| Méthode | Chemin | Description | Contraintes |
 | --- | --- | --- | --- |
-| GET | `/v1/platform/post/{post}/comments` | Récupérer l'arborescence complète des commentaires d'un post. | Utilisateur authentifié |
-| POST | `/v1/platform/post/{post}/comment` | Créer un nouveau commentaire sur un post. | Utilisateur authentifié |
-| POST | `/v1/platform/comment/{comment}/comment` | Répondre à un commentaire existant (création d'un enfant). | Utilisateur authentifié |
-| PUT | `/v1/platform/comment/{comment}` | Modifier le contenu d'un commentaire. | Utilisateur authentifié (auteur requis) |
-| DELETE | `/v1/platform/comment/{comment}` | Supprimer un commentaire. | Utilisateur authentifié (auteur requis) |
-| POST | `/v1/platform/comment/{comment}/like` | Aimer un commentaire (crée un like). | Utilisateur authentifié |
-| POST | `/v1/platform/comment/{like}/dislike` | Retirer son like d'un commentaire. | Utilisateur authentifié |
+| POST | `/api/v1/education` | Créer une formation associée à un CV. | `userId` + `resumeId` obligatoires et cohérents. |
+| PATCH | `/api/v1/education/{id}` | Mise à jour partielle. | Garder le même `userId` que le CV. |
+| DELETE | `/api/v1/education/{id}` | Supprimer une formation. | Cascade sur les projections publiques. |
 
-### Exemple de payload JSON pour créer / répondre à un commentaire
-
+### Payload JSON
 ```json
 {
-  "content": "Merci pour cet article, très instructif !"
+  "userId": "9a7a5ad7-98b1-4ebc-8dcd-8da4cb7ff65f",
+  "resumeId": "b4de4b08-6e8f-4ebd-a6e7-4b797d7d8c92",
+  "school": "École Bro de Technologie",
+  "degree": "MSc Software Engineering",
+  "field": "Cloud-native architectures",
+  "startDate": "2012-09-01",
+  "endDate": "2014-06-01",
+  "isCurrent": false,
+  "position": 0,
+  "description": "Thesis on resilient cloud-native architectures."
 }
 ```
 
-> Lors d'une réponse (`/v1/platform/comment/{comment}/comment`), le commentaire parent est fourni dans l'URL et le backend rattache automatiquement le nouveau commentaire.
+Validation similaire à `/api/v1/experience` (UUID + cohérence `userId`).
 
-### Exemple de réponse JSON pour `/v1/platform/post/{post}/comments`
+## Compétence (`/api/v1/skill`)
 
-```json
-[
-  {
-    "id": "f8b1b254-a012-11ee-b962-0242ac120002",
-    "content": "Super billet.",
-    "publishedAt": "2024-02-05T12:45:00+00:00",
-    "user": {
-      "id": "42",
-      "displayName": "Alice"
-    },
-    "likes": [
-      {
-        "id": "aa31d3b8-a012-11ee-b962-0242ac120002",
-        "user": {
-          "id": "99",
-          "displayName": "Bob"
-        }
-      }
-    ],
-    "children": [
-      {
-        "id": "0d4a71c6-a013-11ee-b962-0242ac120002",
-        "content": "Merci !",
-        "publishedAt": "2024-02-05T13:10:00+00:00",
-        "user": {
-          "id": "42",
-          "displayName": "Alice"
-        },
-        "likes": [],
-        "children": []
-      }
-    ]
-  }
-]
-```
-
-## Commentaire (lecture publique `/public`)
-
-Ces routes sont utilisées pour l'affichage public (sans authentification) et renvoient des données paginées prêtes à être consommées par le frontend.
-
-| Méthode | Chemin | Description | Rôle minimum |
+| Méthode | Chemin | Description | Contraintes |
 | --- | --- | --- | --- |
-| GET | `/public/post/{id}/comments` | Charger paresseusement les commentaires racines d'un post avec pagination et méta-données (`isLiked`, `reactions_count`). | Accès public |
-| GET | `/public/comment/{id}/likes` | Lister les likes associés à un commentaire. | Accès public |
-| GET | `/public/comment/{id}/reactions` | Lister les réactions associées à un commentaire. | Accès public |
+| POST | `/api/v1/skill` | Créer une compétence liée à un CV. | `userId` + `resumeId` obligatoires. |
+| PATCH | `/api/v1/skill/{id}` | Mise à jour partielle. | `userId` doit rester aligné. |
+| DELETE | `/api/v1/skill/{id}` | Supprimer une compétence. | Mise à jour du tri par `position`. |
 
-### Exemple de réponse JSON pour `/public/comment/{id}/likes`
-
+### Payload JSON
 ```json
 {
-  "commentId": "f8b1b254-a012-11ee-b962-0242ac120002",
-  "likes": [
+  "userId": "9a7a5ad7-98b1-4ebc-8dcd-8da4cb7ff65f",
+  "resumeId": "b4de4b08-6e8f-4ebd-a6e7-4b797d7d8c92",
+  "name": "Symfony",
+  "category": "Backend",
+  "level": "expert",
+  "position": 0
+}
+```
+
+## Projections publiques (`/api/public/resume`)
+
+| Méthode | Chemin | Description | Réponse |
+| --- | --- | --- | --- |
+| GET | `/api/public/resume/{userId}` | Projection complète (CV + expériences + formations + compétences). | Objet JSON structuré avec les sections `resume`, `experiences`, `education`, `skills`. |
+| GET | `/api/public/resume/{userId}/experiences` | Liste ordonnée des expériences. | Tableau JSON trié par `position`. |
+| GET | `/api/public/resume/{userId}/education` | Liste ordonnée des formations. | Tableau JSON trié par `position`. |
+| GET | `/api/public/resume/{userId}/skills` | Liste ordonnée des compétences. | Tableau JSON trié par `position`. |
+
+### Exemple de réponse (`GET /api/public/resume/{userId}`)
+```json
+{
+  "resume": {
+    "id": "b4de4b08-6e8f-4ebd-a6e7-4b797d7d8c92",
+    "userId": "9a7a5ad7-98b1-4ebc-8dcd-8da4cb7ff65f",
+    "fullName": "Alex \"Bro\" Devaux",
+    "headline": "Full-stack artisan & indie builder",
+    "summary": "Crafting joyful experiences across web and native platforms.",
+    "location": "Montréal, QC",
+    "email": "hello@bro.dev",
+    "phone": "+1 555 0100 200",
+    "website": "https://bro.dev",
+    "avatarUrl": "https://cdn.example.com/bro/avatar.png",
+    "createdAt": "2025-02-12T12:00:00+00:00",
+    "updatedAt": "2025-02-12T12:30:00+00:00"
+  },
+  "experiences": [
     {
-      "id": "aa31d3b8-a012-11ee-b962-0242ac120002",
-      "user": {
-        "id": "99",
-        "displayName": "Bob"
-      }
+      "id": "d1aab6ac-6f28-4a3a-b709-a33a9800c2fb",
+      "resumeId": "b4de4b08-6e8f-4ebd-a6e7-4b797d7d8c92",
+      "company": "Bro World Studios",
+      "role": "Founder & Principal Engineer",
+      "startDate": "2019-01-01",
+      "endDate": null,
+      "isCurrent": true,
+      "position": 0,
+      "location": "Remote",
+      "description": "Leading product, code and community initiatives."
+    }
+  ],
+  "education": [
+    {
+      "id": "e4f781bc-6b5f-4ed7-b9d5-13f48eac68f1",
+      "resumeId": "b4de4b08-6e8f-4ebd-a6e7-4b797d7d8c92",
+      "school": "École Bro de Technologie",
+      "degree": "MSc Software Engineering",
+      "field": "Cloud-native architectures",
+      "startDate": "2012-09-01",
+      "endDate": "2014-06-01",
+      "isCurrent": false,
+      "position": 0,
+      "description": "Thesis on resilient cloud-native architectures."
+    }
+  ],
+  "skills": [
+    {
+      "id": "f5c6e340-940c-4aa5-b05c-0d8046dd5aa4",
+      "resumeId": "b4de4b08-6e8f-4ebd-a6e7-4b797d7d8c92",
+      "name": "Symfony",
+      "category": "Backend",
+      "level": "expert",
+      "position": 0
     }
   ]
 }
 ```
-## Like (`/v1/like`)
 
-| Méthode | Chemin | Description | Rôle minimum |
-| --- | --- | --- | --- |
-| GET | `/v1/like/count` | Compter les likes. | `ROLE_ADMIN` |
-| GET | `/v1/like` | Lister les likes. | `ROLE_ADMIN` |
-| GET | `/v1/like/ids` | Lister les identifiants des likes. | `ROLE_ADMIN` |
-| GET | `/v1/like/{id}` | Obtenir un like spécifique (UUID v1). | `ROLE_ADMIN` |
+### Erreurs courantes
+- `404 Resume not found for provided userId.` lorsque aucune donnée n’est trouvée pour le `userId` demandé.
+- `400 The provided userId does not match the resume owner.` si une ressource fille (expérience/formation/compétence) référence un `userId` différent de celui du CV parent.
+- `409` lors de la création d’un CV avec un `userId` déjà présent dans la base.
 
-## Resume (`/api/public/resume`, `/api/v1/resume`)
+## Commandes planifiées
+Une migration (`Version20240901000000`) enregistre les commandes `resume:cache:refresh` dans la table `scheduled_command`. Ces jobs doivent être activés dans les environnements où le portfolio consomme l’API pour garantir une projection fraîche.
 
-### Routes publiques consommées par le portfolio
+| Nom | Commande | Arguments | Cron | Rôle |
+| --- | --- | --- | --- | --- |
+| `resume_cache_refresh_profile` | `resume:cache:refresh` | `--scope=profile` | `*/10 * * * *` | Actualise la projection complète pour chaque `userId` actif. |
+| `resume_cache_refresh_public` | `resume:cache:refresh` | `--scope=public` | `0 * * * *` | Régénère les caches partagés exploités par `bro-world-portfolio-main`. |
 
-| Méthode | Chemin | Description |
-| --- | --- | --- |
-| GET | `/api/public/resume/{userId}` | Projection complète du CV (resume, expériences, formations, compétences) pour l’utilisateur `userId`. |
-| GET | `/api/public/resume/{userId}/experiences` | Liste ordonnée des expériences professionnelles pour `userId`. |
-| GET | `/api/public/resume/{userId}/education` | Liste ordonnée des formations pour `userId`. |
-| GET | `/api/public/resume/{userId}/skills` | Liste ordonnée des compétences pour `userId`. |
-
-### Endpoints CRUD (back-office)
-
-| Méthode | Chemin | Description |
-| --- | --- | --- |
-| GET | `/api/v1/resume` | Lister les CV. |
-| GET | `/api/v1/resume/{id}` | Obtenir un CV par identifiant. |
-| POST | `/api/v1/resume` | Créer un CV. |
-| PUT | `/api/v1/resume/{id}` | Remplacer un CV. |
-| PATCH | `/api/v1/resume/{id}` | Mettre à jour partiellement un CV. |
-| DELETE | `/api/v1/resume/{id}` | Supprimer un CV. |
-| GET | `/api/v1/experience` | Lister les expériences. |
-| POST | `/api/v1/experience` | Créer une expérience liée à un CV (`resumeId`). |
-| GET | `/api/v1/education` | Lister les formations. |
-| POST | `/api/v1/education` | Créer une formation liée à un CV (`resumeId`). |
-| GET | `/api/v1/skill` | Lister les compétences. |
-| POST | `/api/v1/skill` | Créer une compétence liée à un CV (`resumeId`). |
-
-## Statistiques (`/v1/statistics`)
-
-| Méthode | Chemin | Description | Rôle minimum |
-| --- | --- | --- | --- |
-| GET | `/v1/statistics` | Agrégations mensuelles des blogs, posts, likes et commentaires, mises en cache 1h. | Accès public authentifié |
-
-### Exemple de réponse JSON pour `/v1/statistics`
-
-```json
-{
-  "postsPerMonth": {
-    "2024-01": 12,
-    "2024-02": 18
-  },
-  "blogsPerMonth": {
-    "2024-01": 2
-  },
-  "likesPerMonth": {
-    "2024-02": 250
-  },
-  "commentsPerMonth": {
-    "2024-02": 57
-  }
-}
-```
-
-Ces structures correspondent aux tableaux retournés par les repositories et permettent d'afficher des métriques par mois côté client.
+Chaque exécution doit itérer sur les `userId` présents en base ; les payloads générés sont ensuite consommés côté frontend.

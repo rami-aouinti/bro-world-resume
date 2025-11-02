@@ -14,7 +14,7 @@ final class Version20240901000000 extends AbstractMigration
     #[Override]
     public function getDescription(): string
     {
-        return 'Register scheduled commands for blog cache refresh.';
+        return 'Register scheduled commands for resume cache refresh.';
     }
 
     #[Override]
@@ -29,9 +29,8 @@ final class Version20240901000000 extends AbstractMigration
         $this->addSql(<<<'SQL'
 INSERT INTO scheduled_command (name, command, arguments, cron_expression, priority, execute_immediately, disabled, locked, ping_back_url, ping_back_failed_url, notes, version, created_at)
 VALUES
-    ('blog_cache_refresh_posts', 'blog:cache:refresh', '--scope=posts', '*/5 * * * *', 0, 0, 0, 0, NULL, NULL, 'Refreshes the public blog feed cache', 1, NOW()),
-    ('blog_cache_refresh_comments', 'blog:cache:refresh', '--scope=comments', '*/5 * * * *', 0, 0, 0, 0, NULL, NULL, 'Refreshes blog comment caches', 1, NOW()),
-    ('blog_cache_refresh_reactions', 'blog:cache:refresh', '--scope=reactions', '*/5 * * * *', 0, 0, 0, 0, NULL, NULL, 'Refreshes blog likes and reactions caches', 1, NOW())
+    ('resume_cache_refresh_profile', 'resume:cache:refresh', '--scope=profile', '*/10 * * * *', 0, 0, 0, 0, NULL, NULL, 'Refreshes cached resume projections for each userId.', 1, NOW()),
+    ('resume_cache_refresh_public', 'resume:cache:refresh', '--scope=public', '0 * * * *', 0, 0, 0, 0, NULL, NULL, 'Refreshes the aggregated public portfolio payloads.', 1, NOW())
 ON DUPLICATE KEY UPDATE
     command = VALUES(command),
     arguments = VALUES(arguments),
@@ -50,7 +49,7 @@ SQL
     {
         $this->addSql(<<<'SQL'
 DELETE FROM scheduled_command
-WHERE name IN ('blog_cache_refresh_posts', 'blog_cache_refresh_comments', 'blog_cache_refresh_reactions')
+WHERE name IN ('resume_cache_refresh_profile', 'resume_cache_refresh_public')
 SQL
         );
     }
