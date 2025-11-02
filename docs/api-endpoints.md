@@ -159,6 +159,34 @@ Ces routes sont utilisées pour l'affichage public (sans authentification) et re
 | GET | `/v1/like/ids` | Lister les identifiants des likes. | `ROLE_ADMIN` |
 | GET | `/v1/like/{id}` | Obtenir un like spécifique (UUID v1). | `ROLE_ADMIN` |
 
+## Resume (`/api/public/resume`, `/api/v1/resume`)
+
+### Routes publiques consommées par le portfolio
+
+| Méthode | Chemin | Description |
+| --- | --- | --- |
+| GET | `/api/public/resume/{userId}` | Projection complète du CV (resume, expériences, formations, compétences) pour l’utilisateur `userId`. |
+| GET | `/api/public/resume/{userId}/experiences` | Liste ordonnée des expériences professionnelles pour `userId`. |
+| GET | `/api/public/resume/{userId}/education` | Liste ordonnée des formations pour `userId`. |
+| GET | `/api/public/resume/{userId}/skills` | Liste ordonnée des compétences pour `userId`. |
+
+### Endpoints CRUD (back-office)
+
+| Méthode | Chemin | Description |
+| --- | --- | --- |
+| GET | `/api/v1/resume` | Lister les CV. |
+| GET | `/api/v1/resume/{id}` | Obtenir un CV par identifiant. |
+| POST | `/api/v1/resume` | Créer un CV. |
+| PUT | `/api/v1/resume/{id}` | Remplacer un CV. |
+| PATCH | `/api/v1/resume/{id}` | Mettre à jour partiellement un CV. |
+| DELETE | `/api/v1/resume/{id}` | Supprimer un CV. |
+| GET | `/api/v1/experience` | Lister les expériences. |
+| POST | `/api/v1/experience` | Créer une expérience liée à un CV (`resumeId`). |
+| GET | `/api/v1/education` | Lister les formations. |
+| POST | `/api/v1/education` | Créer une formation liée à un CV (`resumeId`). |
+| GET | `/api/v1/skill` | Lister les compétences. |
+| POST | `/api/v1/skill` | Créer une compétence liée à un CV (`resumeId`). |
+
 ## Statistiques (`/v1/statistics`)
 
 | Méthode | Chemin | Description | Rôle minimum |
