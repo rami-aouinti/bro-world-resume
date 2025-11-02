@@ -81,7 +81,6 @@ class SkillResource extends RestResource
         }
     }
 
-    #[Override]
     public function processCriteria(array &$criteria, Request $request, string $method): void
     {
         $criteria['userId'] = (string)$this->getCurrentUserId();
