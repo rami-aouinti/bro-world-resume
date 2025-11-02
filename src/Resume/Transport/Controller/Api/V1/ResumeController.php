@@ -14,12 +14,13 @@ use App\General\Transport\Rest\Traits\Actions\Anon\IdsAction;
 use App\General\Transport\Rest\Traits\Actions\Anon\PatchAction;
 use App\General\Transport\Rest\Traits\Actions\Anon\UpdateAction;
 use App\Resume\Application\Resource\ResumeResource;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class ResumeController
- *
  */
+#[AsController]
 #[Route(path: '/v1/resume')]
 class ResumeController extends Controller
 {

@@ -14,12 +14,13 @@ use App\General\Transport\Rest\Traits\Actions\Anon\IdsAction;
 use App\General\Transport\Rest\Traits\Actions\Anon\PatchAction;
 use App\General\Transport\Rest\Traits\Actions\Anon\UpdateAction;
 use App\Resume\Application\Resource\EducationResource;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class EducationController
- *
  */
+#[AsController]
 #[Route(path: '/v1/education')]
 class EducationController extends Controller
 {

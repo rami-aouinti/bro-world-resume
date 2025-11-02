@@ -10,12 +10,14 @@ use App\General\Transport\Rest\Interfaces\ResponseHandlerInterface;
 use App\Resume\Application\Projection\ResumeProjectionService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class ResumePublicController
  */
+#[AsController]
 #[Route(path: '/public/resume')]
 readonly class ResumePublicController
 {

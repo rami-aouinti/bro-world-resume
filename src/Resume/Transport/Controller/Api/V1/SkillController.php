@@ -14,12 +14,13 @@ use App\General\Transport\Rest\Traits\Actions\Anon\IdsAction;
 use App\General\Transport\Rest\Traits\Actions\Anon\PatchAction;
 use App\General\Transport\Rest\Traits\Actions\Anon\UpdateAction;
 use App\Resume\Application\Resource\SkillResource;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class SkillController
- *
  */
+#[AsController]
 #[Route(path: '/v1/skill')]
 class SkillController extends Controller
 {
