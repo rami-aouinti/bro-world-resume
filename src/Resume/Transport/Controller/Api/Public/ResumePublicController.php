@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid as SymfonyUuid;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-#[Route(path: '/api/public/resume')]
+#[Route(path: '/public/resume')]
 class ResumePublicController
 {
     public function __construct(

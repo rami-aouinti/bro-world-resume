@@ -16,7 +16,7 @@ use App\General\Transport\Rest\Traits\Actions\Anon\UpdateAction;
 use App\Resume\Application\Resource\ResumeResource;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/api/v1/resume')]
+#[Route(path: '/v1/resume')]
 class ResumeController extends Controller
 {
     use CountAction;

@@ -16,7 +16,7 @@ use App\General\Transport\Rest\Traits\Actions\Anon\UpdateAction;
 use App\Resume\Application\Resource\EducationResource;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/api/v1/education')]
+#[Route(path: '/v1/education')]
 class EducationController extends Controller
 {
     use CountAction;

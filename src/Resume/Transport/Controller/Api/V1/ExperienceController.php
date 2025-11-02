@@ -16,7 +16,7 @@ use App\General\Transport\Rest\Traits\Actions\Anon\UpdateAction;
 use App\Resume\Application\Resource\ExperienceResource;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/api/v1/experience')]
+#[Route(path: '/v1/experience')]
 class ExperienceController extends Controller
 {
     use CountAction;
