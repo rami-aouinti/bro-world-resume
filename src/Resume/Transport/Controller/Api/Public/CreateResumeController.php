@@ -9,6 +9,8 @@ use App\General\Domain\ValueObject\UserId;
 use App\General\Infrastructure\ValueObject\SymfonyUser;
 use App\Resume\Domain\Entity\Resume;
 use App\Resume\Domain\Repository\ResumeRepositoryInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use JsonException;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,6 +37,10 @@ class CreateResumeController extends AbstractController
     ) {
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     #[Route('/create', name: 'post', methods: ['POST'])]
     #[OA\Post(
         summary: 'Post resume',

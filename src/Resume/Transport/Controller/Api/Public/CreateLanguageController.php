@@ -7,8 +7,11 @@ namespace App\Resume\Transport\Controller\Api\Public;
 use App\Resume\Application\DTO\Language\LanguageDto;
 use App\Resume\Application\Projection\ResumeEntryNormalizerTrait;
 use App\Resume\Application\Resource\LanguageResource;
+use App\Resume\Application\Service\SetupResume;
 use App\Resume\Domain\Entity\Language;
 use App\General\Infrastructure\ValueObject\SymfonyUser;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +20,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+
+use Throwable;
 
 use function array_key_exists;
 use function is_string;
@@ -33,9 +38,15 @@ class CreateLanguageController extends AbstractController
 
     public function __construct(
         private readonly LanguageResource $languageResource,
+        private readonly SetupResume $setupResume,
     ) {
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws Throwable
+     * @throws ORMException
+     */
     #[Route('/create', name: 'post', methods: ['POST'])]
     #[OA\Post(
         summary: 'Create language entry',
@@ -51,9 +62,7 @@ class CreateLanguageController extends AbstractController
         }
 
         if (!isset($payload['resumeId']) || !is_string($payload['resumeId'])) {
-            return new JsonResponse([
-                'message' => 'Missing resume identifier.',
-            ], Response::HTTP_BAD_REQUEST);
+            $payload['resumeId'] = $this->setupResume->initResume($symfonyUser);
         }
 
         $name = isset($payload['name']) ? (string)$payload['name'] : '';

@@ -7,6 +7,7 @@ namespace App\Resume\Transport\Controller\Api\Public;
 use App\Resume\Application\DTO\Education\EducationDto;
 use App\Resume\Application\Projection\ResumeEntryNormalizerTrait;
 use App\Resume\Application\Resource\EducationResource;
+use App\Resume\Application\Service\SetupResume;
 use App\Resume\Domain\Entity\Education;
 use App\General\Infrastructure\ValueObject\SymfonyUser;
 use OpenApi\Attributes as OA;
@@ -17,6 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+
+use Throwable;
 
 use function array_key_exists;
 use function is_string;
@@ -33,9 +36,13 @@ class CreateEducationController extends AbstractController
 
     public function __construct(
         private readonly EducationResource $educationResource,
+        private readonly SetupResume $setupResume,
     ) {
     }
 
+    /**
+     * @throws Throwable
+     */
     #[Route('/create', name: 'post', methods: ['POST'])]
     #[OA\Post(
         summary: 'Create education entry',
@@ -51,9 +58,7 @@ class CreateEducationController extends AbstractController
         }
 
         if (!isset($payload['resumeId']) || !is_string($payload['resumeId'])) {
-            return new JsonResponse([
-                'message' => 'Missing resume identifier.',
-            ], Response::HTTP_BAD_REQUEST);
+            $payload['resumeId'] = $this->setupResume->initResume($symfonyUser);
         }
 
         $school = isset($payload['school']) ? (string)$payload['school'] : '';
