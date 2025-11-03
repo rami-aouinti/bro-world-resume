@@ -60,6 +60,15 @@ class ResumeApiTest extends WebTestCase
         self::assertArrayHasKey('education', $data);
         self::assertArrayHasKey('skills', $data);
         self::assertSame('Alex "Bro" Devaux', $data['resume']['fullName']);
+        self::assertIsArray($data['experiences']);
+        self::assertIsArray($data['education']);
+        self::assertIsArray($data['skills']);
+        self::assertNotEmpty($data['experiences']);
+        self::assertNotEmpty($data['education']);
+        self::assertNotEmpty($data['skills']);
+        self::assertIsArray($data['experiences'][0]);
+        self::assertIsArray($data['education'][0]);
+        self::assertIsArray($data['skills'][0]);
         self::assertCount(2, $data['experiences']);
         self::assertCount(1, $data['education']);
         self::assertCount(3, $data['skills']);
@@ -70,6 +79,45 @@ class ResumeApiTest extends WebTestCase
         $this->client->request('GET', self::API_URL_PREFIX . '/public/resume/' . Uuid::v4()->toRfc4122());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testPublicResumeExperiencesEndpoint(): void
+    {
+        $this->client->request('GET', self::API_URL_PREFIX . '/public/resume/' . ResumeFixtures::USER_ID . '/experiences');
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $data = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertIsArray($data);
+        self::assertCount(2, $data);
+        self::assertIsArray($data[0]);
+        self::assertSame('Bro World Studios', $data[0]['company']);
+    }
+
+    public function testPublicResumeEducationEndpoint(): void
+    {
+        $this->client->request('GET', self::API_URL_PREFIX . '/public/resume/' . ResumeFixtures::USER_ID . '/education');
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $data = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertIsArray($data);
+        self::assertCount(1, $data);
+        self::assertIsArray($data[0]);
+        self::assertSame('MSc Software Engineering', $data[0]['degree']);
+    }
+
+    public function testPublicResumeSkillsEndpoint(): void
+    {
+        $this->client->request('GET', self::API_URL_PREFIX . '/public/resume/' . ResumeFixtures::USER_ID . '/skills');
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $data = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertIsArray($data);
+        self::assertCount(3, $data);
+        self::assertIsArray($data[0]);
+        self::assertSame('Symfony', $data[0]['name']);
     }
 
     public function testCanCreateResumeViaApi(): void
