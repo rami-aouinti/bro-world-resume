@@ -29,6 +29,15 @@ trait ResourceCreateMethod
         ?bool $skipValidation = null,
         ?string $entityManagerName = null
     ): EntityInterface {
+        return $this->handleCreate($dto, $flush, $skipValidation, $entityManagerName);
+    }
+
+    public function handleCreate(
+        RestDtoInterface $dto,
+        ?bool $flush = null,
+        ?bool $skipValidation = null,
+        ?string $entityManagerName = null
+    ): EntityInterface {
         $flush ??= true;
         $skipValidation ??= false;
         // Create new entity
