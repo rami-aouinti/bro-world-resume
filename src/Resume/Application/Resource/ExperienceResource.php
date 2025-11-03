@@ -30,6 +30,9 @@ use UnexpectedValueException;
 
 use function sprintf;
 
+/**
+ * @extends RestResource<Experience>
+ */
 class ExperienceResource extends RestResource
 {
     use UserScopedResourceCacheTrait;
@@ -38,7 +41,6 @@ class ExperienceResource extends RestResource
         private readonly ExperienceRepositoryInterface $experienceRepository,
         private readonly ResumeRepositoryInterface $resumeRepository,
         private readonly AuthenticatorServiceInterface $authenticatorService,
-        #[Autowire(service: 'messenger.bus.command_bus')]
         private readonly MessageBusInterface $commandBus,
         private readonly TagAwareCacheInterface $cache,
     ) {
