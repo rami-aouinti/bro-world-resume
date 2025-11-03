@@ -90,4 +90,15 @@ class GetResumeController extends AbstractController
 
         return $this->json($hobbies);
     }
+
+    #[Route('/projects', name: 'projects', methods: ['GET'])]
+    #[OA\Get(
+        summary: 'Get public resume projects',
+    )]
+    public function projects(SymfonyUser $symfonyUser): JsonResponse
+    {
+        $projects = $this->resumeProjectionService->getProjects(new UserId($symfonyUser->getUserIdentifier()));
+
+        return $this->json($projects);
+    }
 }

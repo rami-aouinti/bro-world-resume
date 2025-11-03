@@ -54,6 +54,8 @@ class ResumeControllerTest extends WebTestCase
             content: (string)json_encode([
                 'resumeId' => $resumeId,
                 'company' => 'Bro World Studios',
+                'companyLocation' => 'Montréal, QC',
+                'companyLogo' => 'https://cdn.example.com/bro-world/logo.png',
                 'role' => 'Principal Engineer',
                 'startDate' => '2020-01-01',
                 'endDate' => null,
@@ -72,6 +74,8 @@ class ResumeControllerTest extends WebTestCase
             content: (string)json_encode([
                 'resumeId' => $resumeId,
                 'school' => 'Bro World Academy',
+                'schoolLocation' => 'Remote Campus',
+                'schoolLogo' => 'https://cdn.example.com/bro-academy/logo.png',
                 'degree' => 'MSc Software Engineering',
                 'field' => 'Platform Design',
                 'startDate' => '2015-09-01',
@@ -79,6 +83,23 @@ class ResumeControllerTest extends WebTestCase
                 'isCurrent' => false,
                 'position' => 0,
                 'description' => 'Research on low-latency resume projections.',
+            ])
+        );
+        $this->assertResponseStatusCodeSame(201);
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/project',
+            server: $authHeaders,
+            content: (string)json_encode([
+                'resumeId' => $resumeId,
+                'title' => 'Resume Platform',
+                'description' => 'Composable resume builder',
+                'logoUrl' => 'https://cdn.example.com/projects/resume-platform.png',
+                'urlDemo' => 'https://resume.example.com',
+                'urlRepository' => 'https://github.com/example/resume',
+                'status' => 'public',
+                'position' => 0,
             ])
         );
         $this->assertResponseStatusCodeSame(201);
@@ -132,13 +153,21 @@ class ResumeControllerTest extends WebTestCase
         self::assertArrayHasKey('experiences', $profile);
         self::assertArrayHasKey('education', $profile);
         self::assertArrayHasKey('skills', $profile);
+        self::assertArrayHasKey('projects', $profile);
         self::assertSame('Principal engineer & resume curator', $profile['resume']['headline']);
         self::assertCount(1, $profile['experiences']);
         self::assertCount(1, $profile['education']);
         self::assertCount(1, $profile['skills']);
+        self::assertCount(1, $profile['projects']);
         self::assertSame('Bro World Studios', $profile['experiences'][0]['company']);
+        self::assertSame('Montréal, QC', $profile['experiences'][0]['companyLocation']);
+        self::assertSame('https://cdn.example.com/bro-world/logo.png', $profile['experiences'][0]['companyLogo']);
         self::assertTrue($profile['experiences'][0]['isCurrent']);
+        self::assertSame('Remote Campus', $profile['education'][0]['schoolLocation']);
+        self::assertSame('https://cdn.example.com/bro-academy/logo.png', $profile['education'][0]['schoolLogo']);
         self::assertSame('Symfony', $profile['skills'][0]['name']);
+        self::assertSame('Resume Platform', $profile['projects'][0]['title']);
+        self::assertSame('https://cdn.example.com/projects/resume-platform.png', $profile['projects'][0]['logoUrl']);
     }
 
     /**

@@ -43,6 +43,13 @@ class Education implements EntityInterface
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $field = null;
 
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $schoolLocation = null;
+
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    #[Assert\Url]
+    private ?string $schoolLogo = null;
+
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $startDate = null;
 
@@ -129,6 +136,30 @@ class Education implements EntityInterface
     public function setField(?string $field): self
     {
         $this->field = $field;
+
+        return $this;
+    }
+
+    public function getSchoolLocation(): ?string
+    {
+        return $this->schoolLocation;
+    }
+
+    public function setSchoolLocation(?string $schoolLocation): self
+    {
+        $this->schoolLocation = $schoolLocation;
+
+        return $this;
+    }
+
+    public function getSchoolLogo(): ?string
+    {
+        return $this->schoolLogo;
+    }
+
+    public function setSchoolLogo(?string $schoolLogo): self
+    {
+        $this->schoolLogo = $schoolLogo;
 
         return $this;
     }

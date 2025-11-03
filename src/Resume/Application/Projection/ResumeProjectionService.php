@@ -10,12 +10,14 @@ use App\Resume\Application\Resource\EducationResource;
 use App\Resume\Application\Resource\ExperienceResource;
 use App\Resume\Application\Resource\HobbyResource;
 use App\Resume\Application\Resource\LanguageResource;
+use App\Resume\Application\Resource\ProjectResource;
 use App\Resume\Application\Resource\ResumeResource;
 use App\Resume\Application\Resource\SkillResource;
 use App\Resume\Domain\Entity\Education;
 use App\Resume\Domain\Entity\Experience;
 use App\Resume\Domain\Entity\Hobby;
 use App\Resume\Domain\Entity\Language;
+use App\Resume\Domain\Entity\Project;
 use App\Resume\Domain\Entity\Resume;
 use App\Resume\Domain\Entity\Skill;
 
@@ -33,6 +35,7 @@ readonly class ResumeProjectionService
         private SkillResource $skillResource,
         private LanguageResource $languageResource,
         private HobbyResource $hobbyResource,
+        private ProjectResource $projectResource,
     ) {
     }
 
@@ -54,6 +57,7 @@ readonly class ResumeProjectionService
             'skills' => $this->getSkills($userId),
             'languages' => $this->getLanguages($userId),
             'hobbies' => $this->getHobbies($userId),
+            'projects' => $this->getProjects($userId),
         ];
     }
 
@@ -119,6 +123,19 @@ readonly class ResumeProjectionService
         return array_map(
             fn (Hobby $hobby): array => $this->normalizeHobby($hobby),
             $hobbies
+        );
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getProjects(UserId $userId): array
+    {
+        $projects = $this->projectResource->findByUserId($userId);
+
+        return array_map(
+            fn (Project $project): array => $this->normalizeProject($project),
+            $projects
         );
     }
 }

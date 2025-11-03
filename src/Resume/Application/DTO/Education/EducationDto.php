@@ -54,6 +54,13 @@ class EducationDto extends RestDto implements SymfonyUserAwareDtoInterface
 
     protected ?string $description = null;
 
+    #[Assert\Length(max: 255)]
+    protected ?string $schoolLocation = null;
+
+    #[Assert\Url]
+    #[Assert\Length(max: 255)]
+    protected ?string $schoolLogo = null;
+
     #[Override]
     public function applySymfonyUser(SymfonyUser $symfonyUser): void
     {
@@ -190,6 +197,32 @@ class EducationDto extends RestDto implements SymfonyUserAwareDtoInterface
         return $this;
     }
 
+    public function getSchoolLocation(): ?string
+    {
+        return $this->schoolLocation;
+    }
+
+    public function setSchoolLocation(?string $schoolLocation): self
+    {
+        $this->setVisited('schoolLocation');
+        $this->schoolLocation = $schoolLocation;
+
+        return $this;
+    }
+
+    public function getSchoolLogo(): ?string
+    {
+        return $this->schoolLogo;
+    }
+
+    public function setSchoolLogo(?string $schoolLogo): self
+    {
+        $this->setVisited('schoolLogo');
+        $this->schoolLogo = $schoolLogo;
+
+        return $this;
+    }
+
     #[Override]
     public function load(EntityInterface $entity): self
     {
@@ -207,6 +240,8 @@ class EducationDto extends RestDto implements SymfonyUserAwareDtoInterface
         $this->isCurrent = $entity->isCurrent();
         $this->position = $entity->getPosition();
         $this->description = $entity->getDescription();
+        $this->schoolLocation = $entity->getSchoolLocation();
+        $this->schoolLogo = $entity->getSchoolLogo();
 
         return $this;
     }
