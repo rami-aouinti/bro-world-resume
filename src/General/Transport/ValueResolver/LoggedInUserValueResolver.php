@@ -37,26 +37,6 @@ class LoggedInUserValueResolver implements ValueResolverInterface
     }
 
     /**
-     * @throws MissingTokenException
-     */
-    public function supports(Request $request, ArgumentMetadata $argument): bool
-    {
-        $output = false;
-
-        if ($argument->getName() === 'symfonyUser' && $argument->getType() === SymfonyUser::class) {
-            $user = $this->lexikJwtAuthenticatorService->getUserId();
-
-            if ($user === null && $argument->isNullable() === false) {
-                throw new MissingTokenException('JWT Token not found');
-            }
-
-            $output = true;
-        }
-
-        return $output;
-    }
-
-    /**
      * {@inheritdoc}
      *
      * @return Generator<SymfonyUser|null>
@@ -65,6 +45,22 @@ class LoggedInUserValueResolver implements ValueResolverInterface
      */
     public function resolve(Request $request, ArgumentMetadata $argument): Generator
     {
+        if ($argument->getName() !== 'symfonyUser' || $argument->getType() !== SymfonyUser::class) {
+            return [];
+        }
+
+        $user = $this->lexikJwtAuthenticatorService->getUserId();
+
+        if ($user === null) {
+            if ($argument->isNullable()) {
+                yield null;
+
+                return;
+            }
+
+            throw new MissingTokenException('JWT Token not found');
+        }
+
         yield $this->lexikJwtAuthenticatorService->getSymfonyUser();
     }
 }
