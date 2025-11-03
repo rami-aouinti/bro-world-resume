@@ -102,6 +102,48 @@ class ResumeApiTest extends WebTestCase
         self::assertSame($payload['fullName'], $data['fullName']);
     }
 
+    public function testPlatformResumeCreateEndpointPersistsResume(): void
+    {
+        $userId = Uuid::v4()->toRfc4122();
+        $payload = [
+            'fullName' => 'Morgan Strategy',
+            'headline' => 'Strategist and operations lead',
+            'summary' => 'Blending vision with execution to accelerate growth.',
+            'location' => 'Remote',
+            'email' => 'morgan@example.com',
+        ];
+
+        $this->client->request(
+            'POST',
+            self::API_URL_PREFIX . '/platform/resume/create',
+            [],
+            [],
+            $this->getAuthorizedHeaders($userId),
+            json_encode($payload, JSON_THROW_ON_ERROR)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+        $data = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertSame($payload['fullName'], $data['fullName']);
+        self::assertSame($payload['headline'], $data['headline']);
+        self::assertSame($userId, $data['userId']);
+
+        static::bootKernel();
+        $container = static::getContainer();
+        /** @var ResumeRepositoryInterface $resumeRepository */
+        $resumeRepository = $container->get(ResumeRepositoryInterface::class);
+        $resume = $resumeRepository->findOneByUserId(new UserId($userId));
+        static::ensureKernelShutdown();
+
+        self::assertNotNull($resume);
+        self::assertSame($payload['fullName'], $resume?->getFullName());
+        self::assertSame($payload['headline'], $resume?->getHeadline());
+        self::assertSame($payload['summary'], $resume?->getSummary());
+        self::assertSame($payload['location'], $resume?->getLocation());
+        self::assertSame($payload['email'], $resume?->getEmail());
+    }
+
     public function testCanAppendExperienceToResume(): void
     {
         $payload = [
