@@ -18,6 +18,7 @@ class SkillDto extends RestDto implements SymfonyUserAwareDtoInterface
 {
     protected static array $mappings = [
         'userId' => 'updateUserId',
+        'resumeId' => 'updateResumeId',
     ];
 
     #[Assert\NotBlank]
@@ -144,6 +145,12 @@ class SkillDto extends RestDto implements SymfonyUserAwareDtoInterface
     public function applyResumeRelationship(SkillEntity $skill, Resume $resume): void
     {
         $skill->setResume($resume);
+    }
+
+    protected function updateResumeId(SkillEntity $skill, ?string $value): void
+    {
+        // Resume association is handled in SkillResource::ensureResumeAssociation().
+        // This method exists to prevent the base RestDto from calling a non-existent setter.
     }
 
     protected function updateUserId(SkillEntity $skill, ?string $value): void

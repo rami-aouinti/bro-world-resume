@@ -19,6 +19,7 @@ class ExperienceDto extends RestDto implements SymfonyUserAwareDtoInterface
 {
     protected static array $mappings = [
         'userId' => 'updateUserId',
+        'resumeId' => 'updateResumeId',
         'startDate' => 'updateStartDate',
         'endDate' => 'updateEndDate',
     ];
@@ -214,6 +215,12 @@ class ExperienceDto extends RestDto implements SymfonyUserAwareDtoInterface
     public function applyResumeRelationship(ExperienceEntity $experience, Resume $resume): void
     {
         $experience->setResume($resume);
+    }
+
+    protected function updateResumeId(ExperienceEntity $experience, ?string $value): void
+    {
+        // Resume association is handled in ExperienceResource::ensureResumeAssociation().
+        // This method exists to prevent the base RestDto from calling a non-existent setter.
     }
 
     protected function updateUserId(ExperienceEntity $experience, ?string $value): void

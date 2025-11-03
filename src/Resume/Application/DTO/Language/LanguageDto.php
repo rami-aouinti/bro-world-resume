@@ -18,6 +18,7 @@ class LanguageDto extends RestDto implements SymfonyUserAwareDtoInterface
 {
     protected static array $mappings = [
         'userId' => 'updateUserId',
+        'resumeId' => 'updateResumeId',
     ];
 
     #[Assert\NotBlank]
@@ -144,6 +145,12 @@ class LanguageDto extends RestDto implements SymfonyUserAwareDtoInterface
     public function applyResumeRelationship(LanguageEntity $language, Resume $resume): void
     {
         $language->setResume($resume);
+    }
+
+    protected function updateResumeId(LanguageEntity $language, ?string $value): void
+    {
+        // Resume association is handled in LanguageResource::ensureResumeAssociation().
+        // This method exists to prevent the base RestDto from calling a non-existent setter.
     }
 
     protected function updateUserId(LanguageEntity $language, ?string $value): void
