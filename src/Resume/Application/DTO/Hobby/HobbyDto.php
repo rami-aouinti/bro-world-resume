@@ -18,6 +18,7 @@ class HobbyDto extends RestDto implements SymfonyUserAwareDtoInterface
 {
     protected static array $mappings = [
         'userId' => 'updateUserId',
+        'resumeId' => 'updateResumeId',
     ];
 
     #[Assert\NotBlank]
@@ -144,6 +145,12 @@ class HobbyDto extends RestDto implements SymfonyUserAwareDtoInterface
     public function applyResumeRelationship(HobbyEntity $hobby, Resume $resume): void
     {
         $hobby->setResume($resume);
+    }
+
+    protected function updateResumeId(HobbyEntity $hobby, ?string $value): void
+    {
+        // Resume association is handled in HobbyResource::ensureResumeAssociation().
+        // This method exists to prevent the base RestDto from calling a non-existent setter.
     }
 
     protected function updateUserId(HobbyEntity $hobby, ?string $value): void
