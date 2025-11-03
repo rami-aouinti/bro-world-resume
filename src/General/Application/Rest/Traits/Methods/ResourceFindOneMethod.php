@@ -23,6 +23,14 @@ trait ResourceFindOneMethod
         ?bool $throwExceptionIfNotFound = null,
         ?string $entityManagerName = null
     ): ?EntityInterface {
+        return $this->handleFindOne($id, $throwExceptionIfNotFound, $entityManagerName);
+    }
+
+    public function handleFindOne(
+        string $id,
+        ?bool $throwExceptionIfNotFound = null,
+        ?string $entityManagerName = null
+    ): ?EntityInterface {
         $throwExceptionIfNotFound ??= false;
         // Before callback method call
         $this->beforeFindOne($id);

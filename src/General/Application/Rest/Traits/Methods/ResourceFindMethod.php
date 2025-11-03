@@ -28,6 +28,20 @@ trait ResourceFindMethod
         ?array $search = null,
         ?string $entityManagerName = null
     ): array {
+        return $this->handleFind($criteria, $orderBy, $limit, $offset, $search, $entityManagerName);
+    }
+
+    /**
+     * @return array<int, EntityInterface>
+     */
+    public function handleFind(
+        ?array $criteria = null,
+        ?array $orderBy = null,
+        ?int $limit = null,
+        ?int $offset = null,
+        ?array $search = null,
+        ?string $entityManagerName = null
+    ): array {
         $criteria ??= [];
         $orderBy ??= [];
         $search ??= [];

@@ -10,25 +10,45 @@ use App\General\Application\Service\AuthenticatorServiceInterface;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\General\Domain\ValueObject\UserId;
 use App\Resume\Application\DTO\Skill\SkillDto;
+use App\Resume\Application\Message\Command\CreateSkillMessage;
+use App\Resume\Application\Resource\Traits\UserScopedResourceCacheTrait;
 use App\Resume\Domain\Entity\Resume;
 use App\Resume\Domain\Entity\Skill;
 use App\Resume\Domain\Repository\ResumeRepositoryInterface;
 use App\Resume\Domain\Repository\SkillRepositoryInterface;
 use Override;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use UnexpectedValueException;
+
+use function sprintf;
 
 class SkillResource extends RestResource
 {
+    use UserScopedResourceCacheTrait;
+
     public function __construct(
         private readonly SkillRepositoryInterface $skillRepository,
         private readonly ResumeRepositoryInterface $resumeRepository,
         private readonly AuthenticatorServiceInterface $authenticatorService,
+        #[Autowire(service: 'messenger.bus.command_bus')]
+        private readonly MessageBusInterface $commandBus,
+        private readonly TagAwareCacheInterface $cache,
     ) {
         parent::__construct($skillRepository);
         $this->setDtoClass(SkillDto::class);
+    }
+
+    protected function getCache(): TagAwareCacheInterface
+    {
+        return $this->cache;
     }
 
     public function getRepository(): SkillRepositoryInterface
@@ -45,6 +65,68 @@ class SkillResource extends RestResource
     public function findByUserId(UserId $userId): array
     {
         return $this->skillRepository->findByUserIdOrdered($userId);
+    }
+
+    #[Override]
+    public function create(
+        RestDtoInterface $dto,
+        ?bool $flush = null,
+        ?bool $skipValidation = null,
+        ?string $entityManagerName = null
+    ): EntityInterface {
+        $message = new CreateSkillMessage(
+            $this->ensureSkillDto($dto),
+            $flush ?? true,
+            $skipValidation ?? false,
+            $entityManagerName
+        );
+
+        $envelope = $this->commandBus->dispatch($message);
+        $handled = $envelope->last(HandledStamp::class);
+
+        if (!$handled instanceof HandledStamp) {
+            throw new RuntimeException('Skill creation message was not handled.');
+        }
+
+        /** @var EntityInterface $entity */
+        $entity = $handled->getResult();
+
+        return $entity;
+    }
+
+    #[Override]
+    public function find(
+        ?array $criteria = null,
+        ?array $orderBy = null,
+        ?int $limit = null,
+        ?int $offset = null,
+        ?array $search = null,
+        ?string $entityManagerName = null
+    ): array {
+        $criteria ??= [];
+        $orderBy ??= [];
+        $search ??= [];
+
+        $cacheKey = $this->buildCacheKeySuffix($criteria, $orderBy, $limit, $offset, $search, $entityManagerName);
+
+        return $this->rememberForCurrentUser(
+            'list.' . $cacheKey,
+            fn (): array => $this->handleFind($criteria, $orderBy, $limit, $offset, $search, $entityManagerName)
+        );
+    }
+
+    #[Override]
+    public function findOne(
+        string $id,
+        ?bool $throwExceptionIfNotFound = null,
+        ?string $entityManagerName = null
+    ): ?EntityInterface {
+        $cacheKey = $this->buildCacheKeySuffix($id, $throwExceptionIfNotFound, $entityManagerName);
+
+        return $this->rememberForCurrentUser(
+            'item.' . $cacheKey,
+            fn (): ?EntityInterface => $this->handleFindOne($id, $throwExceptionIfNotFound, $entityManagerName)
+        );
     }
 
     #[Override]
@@ -79,6 +161,30 @@ class SkillResource extends RestResource
         if ($entity instanceof Skill) {
             $this->assertSkillOwnership($entity);
         }
+    }
+
+    #[Override]
+    public function afterCreate(RestDtoInterface $restDto, EntityInterface $entity): void
+    {
+        $this->invalidateSkillCache($entity);
+    }
+
+    #[Override]
+    public function afterUpdate(string &$id, RestDtoInterface $restDto, EntityInterface $entity): void
+    {
+        $this->invalidateSkillCache($entity);
+    }
+
+    #[Override]
+    public function afterPatch(string &$id, RestDtoInterface $restDto, EntityInterface $entity): void
+    {
+        $this->invalidateSkillCache($entity);
+    }
+
+    #[Override]
+    public function afterDelete(string &$id, EntityInterface $entity): void
+    {
+        $this->invalidateSkillCache($entity);
     }
 
     public function processCriteria(array &$criteria, Request $request, string $method): void
@@ -129,7 +235,7 @@ class SkillResource extends RestResource
         }
     }
 
-    private function getCurrentUserId(): UserId
+    protected function getCurrentUserId(): UserId
     {
         $symfonyUser = $this->authenticatorService->getSymfonyUser();
 
@@ -138,5 +244,25 @@ class SkillResource extends RestResource
         }
 
         return new UserId($symfonyUser->getUserIdentifier());
+    }
+
+    private function invalidateSkillCache(EntityInterface $entity): void
+    {
+        if (!$entity instanceof Skill) {
+            return;
+        }
+
+        $this->invalidateCacheForUser($entity->getUserId());
+    }
+
+    private function ensureSkillDto(RestDtoInterface $restDto): SkillDto
+    {
+        if (!$restDto instanceof SkillDto) {
+            throw new UnexpectedValueException(
+                sprintf('Expected instance of %s, got %s', SkillDto::class, $restDto::class)
+            );
+        }
+
+        return $restDto;
     }
 }
