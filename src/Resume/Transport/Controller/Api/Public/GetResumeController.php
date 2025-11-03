@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Resume\Transport\Controller\Api\Public;
 
 use App\General\Domain\ValueObject\UserId;
+use App\General\Infrastructure\ValueObject\SymfonyUser;
 use App\Resume\Application\Projection\ResumeProjectionService;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,8 +13,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Class GetResumeController
+ */
 #[AsController]
-#[Route('/public/resume', name: 'resume_api_public_')]
+#[Route('/platform/resume', name: 'resume_api_platform_')]
 class GetResumeController extends AbstractController
 {
     public function __construct(
@@ -21,13 +25,13 @@ class GetResumeController extends AbstractController
     ) {
     }
 
-    #[Route('/{userId}', name: 'get', methods: ['GET'])]
+    #[Route('/', name: 'get', methods: ['GET'])]
     #[OA\Get(
         summary: 'Get public resume profile',
     )]
-    public function __invoke(string $userId): JsonResponse
+    public function __invoke(SymfonyUser $symfonyUser): JsonResponse
     {
-        $profile = $this->resumeProjectionService->getResumeProfile(new UserId($userId));
+        $profile = $this->resumeProjectionService->getResumeProfile(new UserId($symfonyUser->getUserIdentifier()));
 
         if ($profile === null) {
             throw $this->createNotFoundException('Resume profile not found.');
@@ -36,57 +40,57 @@ class GetResumeController extends AbstractController
         return $this->json($profile);
     }
 
-    #[Route('/{userId}/experiences', name: 'experiences', methods: ['GET'])]
+    #[Route('/experiences', name: 'experiences', methods: ['GET'])]
     #[OA\Get(
         summary: 'Get public resume experiences',
     )]
-    public function experiences(string $userId): JsonResponse
+    public function experiences(SymfonyUser $symfonyUser): JsonResponse
     {
-        $experiences = $this->resumeProjectionService->getExperiences(new UserId($userId));
+        $experiences = $this->resumeProjectionService->getExperiences(new UserId($symfonyUser->getUserIdentifier()));
 
         return $this->json($experiences);
     }
 
-    #[Route('/{userId}/education', name: 'education', methods: ['GET'])]
+    #[Route('/education', name: 'education', methods: ['GET'])]
     #[OA\Get(
         summary: 'Get public resume education',
     )]
-    public function education(string $userId): JsonResponse
+    public function education(SymfonyUser $symfonyUser): JsonResponse
     {
-        $education = $this->resumeProjectionService->getEducation(new UserId($userId));
+        $education = $this->resumeProjectionService->getEducation(new UserId($symfonyUser->getUserIdentifier()));
 
         return $this->json($education);
     }
 
-    #[Route('/{userId}/skills', name: 'skills', methods: ['GET'])]
+    #[Route('/skills', name: 'skills', methods: ['GET'])]
     #[OA\Get(
         summary: 'Get public resume skills',
     )]
-    public function skills(string $userId): JsonResponse
+    public function skills(SymfonyUser $symfonyUser): JsonResponse
     {
-        $skills = $this->resumeProjectionService->getSkills(new UserId($userId));
+        $skills = $this->resumeProjectionService->getSkills(new UserId($symfonyUser->getUserIdentifier()));
 
         return $this->json($skills);
     }
 
-    #[Route('/{userId}/languages', name: 'languages', methods: ['GET'])]
+    #[Route('/languages', name: 'languages', methods: ['GET'])]
     #[OA\Get(
         summary: 'Get public resume languages',
     )]
-    public function languages(string $userId): JsonResponse
+    public function languages(SymfonyUser $symfonyUser): JsonResponse
     {
-        $languages = $this->resumeProjectionService->getLanguages(new UserId($userId));
+        $languages = $this->resumeProjectionService->getLanguages(new UserId($symfonyUser->getUserIdentifier()));
 
         return $this->json($languages);
     }
 
-    #[Route('/{userId}/hobbies', name: 'hobbies', methods: ['GET'])]
+    #[Route('/hobbies', name: 'hobbies', methods: ['GET'])]
     #[OA\Get(
         summary: 'Get public resume hobbies',
     )]
-    public function hobbies(string $userId): JsonResponse
+    public function hobbies(SymfonyUser $symfonyUser): JsonResponse
     {
-        $hobbies = $this->resumeProjectionService->getHobbies(new UserId($userId));
+        $hobbies = $this->resumeProjectionService->getHobbies(new UserId($symfonyUser->getUserIdentifier()));
 
         return $this->json($hobbies);
     }
