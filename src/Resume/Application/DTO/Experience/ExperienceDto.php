@@ -47,18 +47,18 @@ class ExperienceDto extends RestDto implements SymfonyUserAwareDtoInterface
 
     protected ?bool $isCurrent = null;
 
-    #[Override]
-    public function applySymfonyUser(SymfonyUser $symfonyUser): void
-    {
-        $this->setUserId($symfonyUser->getUserIdentifier());
-    }
-
     protected ?int $position = null;
 
     #[Assert\Length(max: 255)]
     protected ?string $location = null;
 
     protected ?string $description = null;
+
+    #[Override]
+    public function applySymfonyUser(SymfonyUser $symfonyUser): void
+    {
+        $this->setUserId($symfonyUser->getUserIdentifier());
+    }
 
     public function getResumeId(): ?string
     {
@@ -211,6 +211,11 @@ class ExperienceDto extends RestDto implements SymfonyUserAwareDtoInterface
         return $this;
     }
 
+    public function applyResumeRelationship(ExperienceEntity $experience, Resume $resume): void
+    {
+        $experience->setResume($resume);
+    }
+
     protected function updateUserId(ExperienceEntity $experience, ?string $value): void
     {
         if ($value === null) {
@@ -238,10 +243,5 @@ class ExperienceDto extends RestDto implements SymfonyUserAwareDtoInterface
         }
 
         $experience->setEndDate(new DateTimeImmutable($value));
-    }
-
-    public function applyResumeRelationship(ExperienceEntity $experience, Resume $resume): void
-    {
-        $experience->setResume($resume);
     }
 }

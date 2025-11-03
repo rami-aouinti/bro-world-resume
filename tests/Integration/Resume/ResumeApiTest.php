@@ -6,14 +6,15 @@ namespace App\Tests\Integration\Resume;
 
 use App\General\Domain\ValueObject\UserId;
 use App\General\Infrastructure\Service\LexikJwtAuthenticatorService;
-use App\Resume\Infrastructure\DataFixtures\ResumeFixtures;
 use App\Resume\Domain\Repository\ResumeRepositoryInterface;
+use App\Resume\Infrastructure\DataFixtures\ResumeFixtures;
 use App\Tests\TestCase\WebTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
+
 use function sprintf;
 
 class ResumeApiTest extends WebTestCase
@@ -289,7 +290,9 @@ class ResumeApiTest extends WebTestCase
             [],
             [],
             $this->getAuthorizedHeaders(ResumeFixtures::USER_ID),
-            json_encode(['level' => 'conversational'], JSON_THROW_ON_ERROR)
+            json_encode([
+                'level' => 'conversational',
+            ], JSON_THROW_ON_ERROR)
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);

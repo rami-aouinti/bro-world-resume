@@ -141,6 +141,11 @@ class LanguageDto extends RestDto implements SymfonyUserAwareDtoInterface
         return $this;
     }
 
+    public function applyResumeRelationship(LanguageEntity $language, Resume $resume): void
+    {
+        $language->setResume($resume);
+    }
+
     protected function updateUserId(LanguageEntity $language, ?string $value): void
     {
         if ($value === null) {
@@ -148,10 +153,5 @@ class LanguageDto extends RestDto implements SymfonyUserAwareDtoInterface
         }
 
         $language->setUserId(new UserId($value));
-    }
-
-    public function applyResumeRelationship(LanguageEntity $language, Resume $resume): void
-    {
-        $language->setResume($resume);
     }
 }

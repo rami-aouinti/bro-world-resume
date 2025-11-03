@@ -34,8 +34,13 @@ class EducationRepository extends BaseRepository implements EducationRepositoryI
     public function findByUserIdOrdered(UserId $userId): array
     {
         return $this->findBy(
-            ['userId' => UuidHelper::fromString((string)$userId)],
-            ['position' => 'ASC', 'startDate' => 'DESC']
+            [
+                'userId' => UuidHelper::fromString((string)$userId),
+            ],
+            [
+                'position' => 'ASC',
+                'startDate' => 'DESC',
+            ]
         );
     }
 }

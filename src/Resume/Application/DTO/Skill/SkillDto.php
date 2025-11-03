@@ -141,6 +141,11 @@ class SkillDto extends RestDto implements SymfonyUserAwareDtoInterface
         return $this;
     }
 
+    public function applyResumeRelationship(SkillEntity $skill, Resume $resume): void
+    {
+        $skill->setResume($resume);
+    }
+
     protected function updateUserId(SkillEntity $skill, ?string $value): void
     {
         if ($value === null) {
@@ -148,10 +153,5 @@ class SkillDto extends RestDto implements SymfonyUserAwareDtoInterface
         }
 
         $skill->setUserId(new UserId($value));
-    }
-
-    public function applyResumeRelationship(SkillEntity $skill, Resume $resume): void
-    {
-        $skill->setResume($resume);
     }
 }

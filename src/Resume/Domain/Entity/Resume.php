@@ -63,35 +63,45 @@ class Resume implements EntityInterface
      * @var Collection<int, Experience>
      */
     #[ORM\OneToMany(mappedBy: 'resume', targetEntity: Experience::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy([
+        'position' => 'ASC',
+    ])]
     private Collection $experiences;
 
     /**
      * @var Collection<int, Education>
      */
     #[ORM\OneToMany(mappedBy: 'resume', targetEntity: Education::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy([
+        'position' => 'ASC',
+    ])]
     private Collection $educations;
 
     /**
      * @var Collection<int, Skill>
      */
     #[ORM\OneToMany(mappedBy: 'resume', targetEntity: Skill::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy([
+        'position' => 'ASC',
+    ])]
     private Collection $skills;
 
     /**
      * @var Collection<int, Language>
      */
     #[ORM\OneToMany(mappedBy: 'resume', targetEntity: Language::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy([
+        'position' => 'ASC',
+    ])]
     private Collection $languages;
 
     /**
      * @var Collection<int, Hobby>
      */
     #[ORM\OneToMany(mappedBy: 'resume', targetEntity: Hobby::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy([
+        'position' => 'ASC',
+    ])]
     private Collection $hobbies;
 
     public function __construct()

@@ -141,6 +141,11 @@ class HobbyDto extends RestDto implements SymfonyUserAwareDtoInterface
         return $this;
     }
 
+    public function applyResumeRelationship(HobbyEntity $hobby, Resume $resume): void
+    {
+        $hobby->setResume($resume);
+    }
+
     protected function updateUserId(HobbyEntity $hobby, ?string $value): void
     {
         if ($value === null) {
@@ -148,10 +153,5 @@ class HobbyDto extends RestDto implements SymfonyUserAwareDtoInterface
         }
 
         $hobby->setUserId(new UserId($value));
-    }
-
-    public function applyResumeRelationship(HobbyEntity $hobby, Resume $resume): void
-    {
-        $hobby->setResume($resume);
     }
 }

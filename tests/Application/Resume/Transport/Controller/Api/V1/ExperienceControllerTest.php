@@ -7,11 +7,12 @@ namespace App\Tests\Application\Resume\Transport\Controller\Api\V1;
 use App\Resume\Infrastructure\DataFixtures\ResumeFixtures;
 use App\Tests\TestCase\WebTestCase;
 use Ramsey\Uuid\Uuid;
-use const JSON_THROW_ON_ERROR;
 
 use function json_decode;
 use function json_encode;
 use function sprintf;
+
+use const JSON_THROW_ON_ERROR;
 
 /**
  * @coversNothing

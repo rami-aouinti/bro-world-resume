@@ -44,18 +44,24 @@ class CreateResumeController extends AbstractController
         try {
             $payload = JSON::decode((string)$request->getContent(), true);
         } catch (JsonException) {
-            return new JsonResponse(['message' => 'Invalid JSON body.'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse([
+                'message' => 'Invalid JSON body.',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         if (!is_array($payload)) {
-            return new JsonResponse(['message' => 'Invalid request payload.'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse([
+                'message' => 'Invalid request payload.',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         $fullName = isset($payload['fullName']) ? (string)$payload['fullName'] : '';
         $headline = isset($payload['headline']) ? (string)$payload['headline'] : '';
 
         if ($fullName === '' || $headline === '') {
-            return new JsonResponse(['message' => 'Missing required fields.'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse([
+                'message' => 'Missing required fields.',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         $userId = new UserId($symfonyUser->getUserIdentifier());

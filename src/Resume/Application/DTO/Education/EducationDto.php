@@ -210,6 +210,11 @@ class EducationDto extends RestDto implements SymfonyUserAwareDtoInterface
         return $this;
     }
 
+    public function applyResumeRelationship(EducationEntity $education, Resume $resume): void
+    {
+        $education->setResume($resume);
+    }
+
     protected function updateUserId(EducationEntity $education, ?string $value): void
     {
         if ($value === null) {
@@ -239,10 +244,5 @@ class EducationDto extends RestDto implements SymfonyUserAwareDtoInterface
         }
 
         $education->setEndDate(new DateTimeImmutable($value));
-    }
-
-    public function applyResumeRelationship(EducationEntity $education, Resume $resume): void
-    {
-        $education->setResume($resume);
     }
 }

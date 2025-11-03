@@ -33,8 +33,13 @@ class SkillRepository extends BaseRepository implements SkillRepositoryInterface
     public function findByUserIdOrdered(UserId $userId): array
     {
         return $this->findBy(
-            ['userId' => UuidHelper::fromString((string)$userId)],
-            ['position' => 'ASC', 'name' => 'ASC']
+            [
+                'userId' => UuidHelper::fromString((string)$userId),
+            ],
+            [
+                'position' => 'ASC',
+                'name' => 'ASC',
+            ]
         );
     }
 }

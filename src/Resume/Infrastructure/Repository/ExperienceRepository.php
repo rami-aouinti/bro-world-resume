@@ -34,8 +34,13 @@ class ExperienceRepository extends BaseRepository implements ExperienceRepositor
     public function findByUserIdOrdered(UserId $userId): array
     {
         return $this->findBy(
-            ['userId' => UuidHelper::fromString((string)$userId)],
-            ['position' => 'ASC', 'startDate' => 'DESC']
+            [
+                'userId' => UuidHelper::fromString((string)$userId),
+            ],
+            [
+                'position' => 'ASC',
+                'startDate' => 'DESC',
+            ]
         );
     }
 }

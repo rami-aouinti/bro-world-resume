@@ -33,8 +33,13 @@ class LanguageRepository extends BaseRepository implements LanguageRepositoryInt
     public function findByUserIdOrdered(UserId $userId): array
     {
         return $this->findBy(
-            ['userId' => UuidHelper::fromString((string)$userId)],
-            ['position' => 'ASC', 'name' => 'ASC']
+            [
+                'userId' => UuidHelper::fromString((string)$userId),
+            ],
+            [
+                'position' => 'ASC',
+                'name' => 'ASC',
+            ]
         );
     }
 }
