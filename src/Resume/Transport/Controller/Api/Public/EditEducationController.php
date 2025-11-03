@@ -90,6 +90,14 @@ class EditEducationController extends AbstractController
             $dto->setPosition($payload['position'] !== null ? (int)$payload['position'] : null);
         }
 
+        if (array_key_exists('schoolLocation', $payload)) {
+            $dto->setSchoolLocation($payload['schoolLocation'] !== null ? (string)$payload['schoolLocation'] : null);
+        }
+
+        if (array_key_exists('schoolLogo', $payload)) {
+            $dto->setSchoolLogo($payload['schoolLogo'] !== null ? (string)$payload['schoolLogo'] : null);
+        }
+
         if (array_key_exists('description', $payload)) {
             $dto->setDescription($payload['description'] !== null ? (string)$payload['description'] : null);
         }

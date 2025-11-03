@@ -10,6 +10,7 @@ use App\Resume\Domain\Entity\Education;
 use App\Resume\Domain\Entity\Experience;
 use App\Resume\Domain\Entity\Hobby;
 use App\Resume\Domain\Entity\Language;
+use App\Resume\Domain\Entity\Project;
 use App\Resume\Domain\Entity\Resume;
 use App\Resume\Domain\Entity\Skill;
 use DateTimeImmutable;
@@ -41,6 +42,8 @@ class ResumeFixtures extends Fixture
         $experience1 = (new Experience())
             ->setUserId($userId)
             ->setCompany('Bro World Studios')
+            ->setCompanyLocation('Montréal, QC')
+            ->setCompanyLogo('https://cdn.example.com/bro-world/logo.png')
             ->setRole('Founder & Principal Engineer')
             ->setStartDate(new DateTimeImmutable('2019-01-01'))
             ->setIsCurrent(true)
@@ -51,6 +54,8 @@ class ResumeFixtures extends Fixture
         $experience2 = (new Experience())
             ->setUserId($userId)
             ->setCompany('Indie Labs')
+            ->setCompanyLocation('Paris, France')
+            ->setCompanyLogo('https://cdn.example.com/indie-labs/logo.png')
             ->setRole('Senior Software Developer')
             ->setStartDate(new DateTimeImmutable('2015-06-01'))
             ->setEndDate(new DateTimeImmutable('2018-12-31'))
@@ -62,6 +67,8 @@ class ResumeFixtures extends Fixture
         $education = (new Education())
             ->setUserId($userId)
             ->setSchool('École Bro de Technologie')
+            ->setSchoolLocation('Montréal, QC')
+            ->setSchoolLogo('https://cdn.example.com/bro-tech/logo.png')
             ->setDegree('MSc Software Engineering')
             ->setStartDate(new DateTimeImmutable('2012-09-01'))
             ->setEndDate(new DateTimeImmutable('2014-06-01'))
@@ -88,6 +95,26 @@ class ResumeFixtures extends Fixture
             ->setCategory('Platform')
             ->setLevel('advanced')
             ->setPosition(2);
+
+        $project1 = (new Project())
+            ->setUserId($userId)
+            ->setTitle('Resume Platform')
+            ->setDescription('Composable resume builder empowering builders worldwide.')
+            ->setLogoUrl('https://cdn.example.com/projects/resume-platform.png')
+            ->setUrlDemo('https://resume.bro.dev')
+            ->setUrlRepository('https://github.com/bro-world/resume-platform')
+            ->setStatus(Project::STATUS_PUBLIC)
+            ->setPosition(0);
+
+        $project2 = (new Project())
+            ->setUserId($userId)
+            ->setTitle('Bro CLI')
+            ->setDescription('Developer-first toolkit for shipping indie products.')
+            ->setLogoUrl('https://cdn.example.com/projects/bro-cli.png')
+            ->setUrlDemo('https://cli.bro.dev')
+            ->setUrlRepository('https://github.com/bro-world/bro-cli')
+            ->setStatus(Project::STATUS_PRIVATE)
+            ->setPosition(1);
 
         $language1 = (new Language())
             ->setUserId($userId)
@@ -124,6 +151,8 @@ class ResumeFixtures extends Fixture
             ->addSkill($skill1)
             ->addSkill($skill2)
             ->addSkill($skill3)
+            ->addProject($project1)
+            ->addProject($project2)
             ->addLanguage($language1)
             ->addLanguage($language2)
             ->addHobby($hobby1)

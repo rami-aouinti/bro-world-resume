@@ -98,6 +98,14 @@ class CreateExperienceController extends AbstractController
             $dto->setLocation($payload['location'] !== null ? (string)$payload['location'] : null);
         }
 
+        if (array_key_exists('companyLocation', $payload)) {
+            $dto->setCompanyLocation($payload['companyLocation'] !== null ? (string)$payload['companyLocation'] : null);
+        }
+
+        if (array_key_exists('companyLogo', $payload)) {
+            $dto->setCompanyLogo($payload['companyLogo'] !== null ? (string)$payload['companyLogo'] : null);
+        }
+
         if (array_key_exists('description', $payload)) {
             $dto->setDescription($payload['description'] !== null ? (string)$payload['description'] : null);
         }

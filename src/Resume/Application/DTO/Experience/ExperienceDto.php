@@ -53,6 +53,13 @@ class ExperienceDto extends RestDto implements SymfonyUserAwareDtoInterface
     #[Assert\Length(max: 255)]
     protected ?string $location = null;
 
+    #[Assert\Length(max: 255)]
+    protected ?string $companyLocation = null;
+
+    #[Assert\Url]
+    #[Assert\Length(max: 255)]
+    protected ?string $companyLogo = null;
+
     protected ?string $description = null;
 
     #[Override]
@@ -178,6 +185,32 @@ class ExperienceDto extends RestDto implements SymfonyUserAwareDtoInterface
         return $this->location;
     }
 
+    public function setCompanyLocation(?string $companyLocation): self
+    {
+        $this->setVisited('companyLocation');
+        $this->companyLocation = $companyLocation;
+
+        return $this;
+    }
+
+    public function getCompanyLocation(): ?string
+    {
+        return $this->companyLocation;
+    }
+
+    public function setCompanyLogo(?string $companyLogo): self
+    {
+        $this->setVisited('companyLogo');
+        $this->companyLogo = $companyLogo;
+
+        return $this;
+    }
+
+    public function getCompanyLogo(): ?string
+    {
+        return $this->companyLogo;
+    }
+
     public function setDescription(?string $description): self
     {
         $this->setVisited('description');
@@ -207,6 +240,8 @@ class ExperienceDto extends RestDto implements SymfonyUserAwareDtoInterface
         $this->isCurrent = $entity->isCurrent();
         $this->position = $entity->getPosition();
         $this->location = $entity->getLocation();
+        $this->companyLocation = $entity->getCompanyLocation();
+        $this->companyLogo = $entity->getCompanyLogo();
         $this->description = $entity->getDescription();
 
         return $this;

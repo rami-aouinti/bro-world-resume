@@ -8,6 +8,7 @@ use App\Resume\Domain\Entity\Education;
 use App\Resume\Domain\Entity\Experience;
 use App\Resume\Domain\Entity\Hobby;
 use App\Resume\Domain\Entity\Language;
+use App\Resume\Domain\Entity\Project;
 use App\Resume\Domain\Entity\Resume;
 use App\Resume\Domain\Entity\Skill;
 
@@ -49,6 +50,8 @@ trait ResumeEntryNormalizerTrait
             'isCurrent' => $experience->isCurrent(),
             'position' => $experience->getPosition(),
             'location' => $experience->getLocation(),
+            'companyLocation' => $experience->getCompanyLocation(),
+            'companyLogo' => $experience->getCompanyLogo(),
             'description' => $experience->getDescription(),
         ];
     }
@@ -68,6 +71,8 @@ trait ResumeEntryNormalizerTrait
             'endDate' => $education->getEndDate()?->format('Y-m-d'),
             'isCurrent' => $education->isCurrent(),
             'position' => $education->getPosition(),
+            'schoolLocation' => $education->getSchoolLocation(),
+            'schoolLogo' => $education->getSchoolLogo(),
             'description' => $education->getDescription(),
         ];
     }
@@ -114,6 +119,24 @@ trait ResumeEntryNormalizerTrait
             'category' => $hobby->getCategory(),
             'level' => $hobby->getLevel(),
             'position' => $hobby->getPosition(),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function normalizeProject(Project $project): array
+    {
+        return [
+            'id' => $project->getId(),
+            'resumeId' => $project->getResume()?->getId(),
+            'title' => $project->getTitle(),
+            'description' => $project->getDescription(),
+            'logoUrl' => $project->getLogoUrl(),
+            'urlDemo' => $project->getUrlDemo(),
+            'urlRepository' => $project->getUrlRepository(),
+            'status' => $project->getStatus(),
+            'position' => $project->getPosition(),
         ];
     }
 }

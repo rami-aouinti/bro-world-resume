@@ -62,27 +62,32 @@ class ResumeApiTest extends WebTestCase
         self::assertArrayHasKey('skills', $data);
         self::assertArrayHasKey('languages', $data);
         self::assertArrayHasKey('hobbies', $data);
+        self::assertArrayHasKey('projects', $data);
         self::assertSame('Alex "Bro" Devaux', $data['resume']['fullName']);
         self::assertIsArray($data['experiences']);
         self::assertIsArray($data['education']);
         self::assertIsArray($data['skills']);
         self::assertIsArray($data['languages']);
         self::assertIsArray($data['hobbies']);
+        self::assertIsArray($data['projects']);
         self::assertNotEmpty($data['experiences']);
         self::assertNotEmpty($data['education']);
         self::assertNotEmpty($data['skills']);
         self::assertNotEmpty($data['languages']);
         self::assertNotEmpty($data['hobbies']);
+        self::assertNotEmpty($data['projects']);
         self::assertIsArray($data['experiences'][0]);
         self::assertIsArray($data['education'][0]);
         self::assertIsArray($data['skills'][0]);
         self::assertIsArray($data['languages'][0]);
         self::assertIsArray($data['hobbies'][0]);
+        self::assertIsArray($data['projects'][0]);
         self::assertCount(2, $data['experiences']);
         self::assertCount(1, $data['education']);
         self::assertCount(3, $data['skills']);
         self::assertCount(2, $data['languages']);
         self::assertCount(2, $data['hobbies']);
+        self::assertCount(2, $data['projects']);
     }
 
     public function testPublicResumeProfileNotFound(): void
@@ -103,6 +108,7 @@ class ResumeApiTest extends WebTestCase
         self::assertCount(2, $data);
         self::assertIsArray($data[0]);
         self::assertSame('Bro World Studios', $data[0]['company']);
+        self::assertSame('Montréal, QC', $data[0]['companyLocation']);
     }
 
     public function testPublicResumeEducationEndpoint(): void
@@ -116,6 +122,7 @@ class ResumeApiTest extends WebTestCase
         self::assertCount(1, $data);
         self::assertIsArray($data[0]);
         self::assertSame('MSc Software Engineering', $data[0]['degree']);
+        self::assertSame('Montréal, QC', $data[0]['schoolLocation']);
     }
 
     public function testPublicResumeSkillsEndpoint(): void
@@ -155,6 +162,19 @@ class ResumeApiTest extends WebTestCase
         self::assertCount(2, $data);
         self::assertIsArray($data[0]);
         self::assertSame('Indie game design', $data[0]['name']);
+    }
+
+    public function testPublicResumeProjectsEndpoint(): void
+    {
+        $this->client->request('GET', self::API_URL_PREFIX . '/public/resume/' . ResumeFixtures::USER_ID . '/projects');
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $data = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertIsArray($data);
+        self::assertCount(2, $data);
+        self::assertIsArray($data[0]);
+        self::assertSame('Resume Platform', $data[0]['title']);
     }
 
     public function testCanCreateResumeViaApi(): void

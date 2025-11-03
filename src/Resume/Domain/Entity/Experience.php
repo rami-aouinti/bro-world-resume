@@ -37,6 +37,13 @@ class Experience implements EntityInterface
     #[Assert\NotBlank]
     private string $company = '';
 
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $companyLocation = null;
+
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    #[Assert\Url]
+    private ?string $companyLogo = null;
+
     #[ORM\Column(type: Types::STRING, length: 255)]
     #[Assert\NotBlank]
     private string $role = '';
@@ -184,6 +191,30 @@ class Experience implements EntityInterface
     public function setLocation(?string $location): self
     {
         $this->location = $location;
+
+        return $this;
+    }
+
+    public function getCompanyLocation(): ?string
+    {
+        return $this->companyLocation;
+    }
+
+    public function setCompanyLocation(?string $companyLocation): self
+    {
+        $this->companyLocation = $companyLocation;
+
+        return $this;
+    }
+
+    public function getCompanyLogo(): ?string
+    {
+        return $this->companyLogo;
+    }
+
+    public function setCompanyLogo(?string $companyLogo): self
+    {
+        $this->companyLogo = $companyLogo;
 
         return $this;
     }

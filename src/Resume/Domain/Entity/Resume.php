@@ -104,6 +104,15 @@ class Resume implements EntityInterface
     ])]
     private Collection $hobbies;
 
+    /**
+     * @var Collection<int, Project>
+     */
+    #[ORM\OneToMany(mappedBy: 'resume', targetEntity: Project::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy([
+        'position' => 'ASC',
+    ])]
+    private Collection $projects;
+
     public function __construct()
     {
         $this->id = $this->createUuid();
@@ -113,6 +122,7 @@ class Resume implements EntityInterface
         $this->skills = new ArrayCollection();
         $this->languages = new ArrayCollection();
         $this->hobbies = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     public function getId(): string
@@ -372,6 +382,35 @@ class Resume implements EntityInterface
         if ($this->hobbies->removeElement($hobby)) {
             if ($hobby->getResume() === $this) {
                 $hobby->setResume(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Project>
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): self
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects->add($project);
+            $project->setResume($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): self
+    {
+        if ($this->projects->removeElement($project)) {
+            if ($project->getResume() === $this) {
+                $project->setResume(null);
             }
         }
 
