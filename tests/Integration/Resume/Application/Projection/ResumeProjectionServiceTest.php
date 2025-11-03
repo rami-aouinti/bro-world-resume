@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 class ResumeProjectionServiceTest extends KernelTestCase
 {
-    public function testProjectionAggregatesResumeEducationExperienceAndSkills(): void
+    public function testProjectionAggregatesResumeEducationExperienceSkillsLanguagesAndHobbies(): void
     {
         self::bootKernel();
         $service = static::getContainer()->get(ResumeProjectionService::class);
@@ -25,9 +25,13 @@ class ResumeProjectionServiceTest extends KernelTestCase
         self::assertArrayHasKey('experiences', $payload);
         self::assertArrayHasKey('education', $payload);
         self::assertArrayHasKey('skills', $payload);
+        self::assertArrayHasKey('languages', $payload);
+        self::assertArrayHasKey('hobbies', $payload);
         self::assertSame(ResumeFixtures::USER_ID, $payload['resume']['userId']);
         self::assertNotEmpty($payload['experiences']);
         self::assertNotEmpty($payload['education']);
         self::assertNotEmpty($payload['skills']);
+        self::assertNotEmpty($payload['languages']);
+        self::assertNotEmpty($payload['hobbies']);
     }
 }

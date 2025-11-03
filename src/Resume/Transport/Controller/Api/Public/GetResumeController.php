@@ -68,4 +68,26 @@ class GetResumeController extends AbstractController
 
         return $this->json($skills);
     }
+
+    #[Route('/{userId}/languages', name: 'languages', methods: ['GET'])]
+    #[OA\Get(
+        summary: 'Get public resume languages',
+    )]
+    public function languages(string $userId): JsonResponse
+    {
+        $languages = $this->resumeProjectionService->getLanguages(new UserId($userId));
+
+        return $this->json($languages);
+    }
+
+    #[Route('/{userId}/hobbies', name: 'hobbies', methods: ['GET'])]
+    #[OA\Get(
+        summary: 'Get public resume hobbies',
+    )]
+    public function hobbies(string $userId): JsonResponse
+    {
+        $hobbies = $this->resumeProjectionService->getHobbies(new UserId($userId));
+
+        return $this->json($hobbies);
+    }
 }
