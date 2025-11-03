@@ -33,10 +33,6 @@ class GetResumeController extends AbstractController
     {
         $profile = $this->resumeProjectionService->getResumeProfile(new UserId($symfonyUser->getUserIdentifier()));
 
-        if ($profile === null) {
-            throw $this->createNotFoundException('Resume profile not found.');
-        }
-
         return $this->json($profile);
     }
 
