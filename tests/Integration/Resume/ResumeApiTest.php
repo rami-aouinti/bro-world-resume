@@ -59,19 +59,29 @@ class ResumeApiTest extends WebTestCase
         self::assertArrayHasKey('experiences', $data);
         self::assertArrayHasKey('education', $data);
         self::assertArrayHasKey('skills', $data);
+        self::assertArrayHasKey('languages', $data);
+        self::assertArrayHasKey('hobbies', $data);
         self::assertSame('Alex "Bro" Devaux', $data['resume']['fullName']);
         self::assertIsArray($data['experiences']);
         self::assertIsArray($data['education']);
         self::assertIsArray($data['skills']);
+        self::assertIsArray($data['languages']);
+        self::assertIsArray($data['hobbies']);
         self::assertNotEmpty($data['experiences']);
         self::assertNotEmpty($data['education']);
         self::assertNotEmpty($data['skills']);
+        self::assertNotEmpty($data['languages']);
+        self::assertNotEmpty($data['hobbies']);
         self::assertIsArray($data['experiences'][0]);
         self::assertIsArray($data['education'][0]);
         self::assertIsArray($data['skills'][0]);
+        self::assertIsArray($data['languages'][0]);
+        self::assertIsArray($data['hobbies'][0]);
         self::assertCount(2, $data['experiences']);
         self::assertCount(1, $data['education']);
         self::assertCount(3, $data['skills']);
+        self::assertCount(2, $data['languages']);
+        self::assertCount(2, $data['hobbies']);
     }
 
     public function testPublicResumeProfileNotFound(): void
@@ -118,6 +128,32 @@ class ResumeApiTest extends WebTestCase
         self::assertCount(3, $data);
         self::assertIsArray($data[0]);
         self::assertSame('Symfony', $data[0]['name']);
+    }
+
+    public function testPublicResumeLanguagesEndpoint(): void
+    {
+        $this->client->request('GET', self::API_URL_PREFIX . '/public/resume/' . ResumeFixtures::USER_ID . '/languages');
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $data = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertIsArray($data);
+        self::assertCount(2, $data);
+        self::assertIsArray($data[0]);
+        self::assertSame('English', $data[0]['name']);
+    }
+
+    public function testPublicResumeHobbiesEndpoint(): void
+    {
+        $this->client->request('GET', self::API_URL_PREFIX . '/public/resume/' . ResumeFixtures::USER_ID . '/hobbies');
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $data = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertIsArray($data);
+        self::assertCount(2, $data);
+        self::assertIsArray($data[0]);
+        self::assertSame('Indie game design', $data[0]['name']);
     }
 
     public function testCanCreateResumeViaApi(): void
@@ -220,6 +256,170 @@ class ResumeApiTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $experiences = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
         self::assertCount(3, $experiences);
+    }
+
+    public function testLanguageLifecycle(): void
+    {
+        $createPayload = [
+            'resumeId' => $this->resumeId,
+            'name' => 'Spanish',
+            'category' => 'Spoken',
+            'level' => 'basic',
+            'position' => 5,
+        ];
+
+        $this->client->request(
+            'POST',
+            self::API_URL_PREFIX . '/v1/language',
+            [],
+            [],
+            $this->getAuthorizedHeaders(ResumeFixtures::USER_ID),
+            json_encode($createPayload, JSON_THROW_ON_ERROR)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+        $language = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+        self::assertArrayHasKey('id', $language);
+
+        $languageId = $language['id'];
+
+        $this->client->request(
+            'PATCH',
+            self::API_URL_PREFIX . '/v1/language/' . $languageId,
+            [],
+            [],
+            $this->getAuthorizedHeaders(ResumeFixtures::USER_ID),
+            json_encode(['level' => 'conversational'], JSON_THROW_ON_ERROR)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $this->client->request(
+            'GET',
+            self::API_URL_PREFIX . '/v1/language/' . $languageId,
+            [],
+            [],
+            $this->getAuthorizedHeaders(ResumeFixtures::USER_ID)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $language = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame('conversational', $language['level']);
+
+        $this->client->request('GET', self::API_URL_PREFIX . '/public/resume/' . ResumeFixtures::USER_ID . '/languages');
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $languages = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(3, $languages);
+
+        $this->client->request(
+            'DELETE',
+            self::API_URL_PREFIX . '/v1/language/' . $languageId,
+            [],
+            [],
+            $this->getAuthorizedHeaders(ResumeFixtures::USER_ID)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
+
+        $this->client->request('GET', self::API_URL_PREFIX . '/public/resume/' . ResumeFixtures::USER_ID . '/languages');
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $languages = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(2, $languages);
+
+        $this->client->request(
+            'GET',
+            self::API_URL_PREFIX . '/v1/language/' . $languageId,
+            [],
+            [],
+            $this->getAuthorizedHeaders(ResumeFixtures::USER_ID)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testHobbyLifecycle(): void
+    {
+        $createPayload = [
+            'resumeId' => $this->resumeId,
+            'name' => 'Photography',
+            'category' => 'Creative',
+            'level' => 'intermediate',
+            'position' => 4,
+        ];
+
+        $this->client->request(
+            'POST',
+            self::API_URL_PREFIX . '/v1/hobby',
+            [],
+            [],
+            $this->getAuthorizedHeaders(ResumeFixtures::USER_ID),
+            json_encode($createPayload, JSON_THROW_ON_ERROR)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+        $hobby = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+        self::assertArrayHasKey('id', $hobby);
+
+        $hobbyId = $hobby['id'];
+
+        $this->client->request(
+            'PUT',
+            self::API_URL_PREFIX . '/v1/hobby/' . $hobbyId,
+            [],
+            [],
+            $this->getAuthorizedHeaders(ResumeFixtures::USER_ID),
+            json_encode([
+                'resumeId' => $this->resumeId,
+                'name' => 'Photography',
+                'category' => 'Creative',
+                'level' => 'advanced',
+                'position' => 4,
+            ], JSON_THROW_ON_ERROR)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $this->client->request(
+            'GET',
+            self::API_URL_PREFIX . '/v1/hobby/' . $hobbyId,
+            [],
+            [],
+            $this->getAuthorizedHeaders(ResumeFixtures::USER_ID)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $hobby = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame('advanced', $hobby['level']);
+
+        $this->client->request('GET', self::API_URL_PREFIX . '/public/resume/' . ResumeFixtures::USER_ID . '/hobbies');
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $hobbies = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(3, $hobbies);
+
+        $this->client->request(
+            'DELETE',
+            self::API_URL_PREFIX . '/v1/hobby/' . $hobbyId,
+            [],
+            [],
+            $this->getAuthorizedHeaders(ResumeFixtures::USER_ID)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
+
+        $this->client->request('GET', self::API_URL_PREFIX . '/public/resume/' . ResumeFixtures::USER_ID . '/hobbies');
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $hobbies = json_decode($this->client->getResponse()->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(2, $hobbies);
+
+        $this->client->request(
+            'GET',
+            self::API_URL_PREFIX . '/v1/hobby/' . $hobbyId,
+            [],
+            [],
+            $this->getAuthorizedHeaders(ResumeFixtures::USER_ID)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
     /**

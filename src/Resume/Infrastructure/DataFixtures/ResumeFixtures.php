@@ -8,6 +8,8 @@ use App\General\Domain\Rest\UuidHelper;
 use App\General\Domain\ValueObject\UserId;
 use App\Resume\Domain\Entity\Education;
 use App\Resume\Domain\Entity\Experience;
+use App\Resume\Domain\Entity\Hobby;
+use App\Resume\Domain\Entity\Language;
 use App\Resume\Domain\Entity\Resume;
 use App\Resume\Domain\Entity\Skill;
 use DateTimeImmutable;
@@ -87,13 +89,45 @@ class ResumeFixtures extends Fixture
             ->setLevel('advanced')
             ->setPosition(2);
 
+        $language1 = (new Language())
+            ->setUserId($userId)
+            ->setName('English')
+            ->setLevel('native')
+            ->setCategory('Spoken')
+            ->setPosition(0);
+
+        $language2 = (new Language())
+            ->setUserId($userId)
+            ->setName('French')
+            ->setLevel('fluent')
+            ->setCategory('Spoken')
+            ->setPosition(1);
+
+        $hobby1 = (new Hobby())
+            ->setUserId($userId)
+            ->setName('Indie game design')
+            ->setLevel('enthusiast')
+            ->setCategory('Creative')
+            ->setPosition(0);
+
+        $hobby2 = (new Hobby())
+            ->setUserId($userId)
+            ->setName('Trail running')
+            ->setLevel('advanced')
+            ->setCategory('Outdoors')
+            ->setPosition(1);
+
         $resume
             ->addExperience($experience1)
             ->addExperience($experience2)
             ->addEducation($education)
             ->addSkill($skill1)
             ->addSkill($skill2)
-            ->addSkill($skill3);
+            ->addSkill($skill3)
+            ->addLanguage($language1)
+            ->addLanguage($language2)
+            ->addHobby($hobby1)
+            ->addHobby($hobby2);
 
         $manager->persist($resume);
         $manager->flush();

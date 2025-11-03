@@ -80,6 +80,20 @@ class Resume implements EntityInterface
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $skills;
 
+    /**
+     * @var Collection<int, Language>
+     */
+    #[ORM\OneToMany(mappedBy: 'resume', targetEntity: Language::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $languages;
+
+    /**
+     * @var Collection<int, Hobby>
+     */
+    #[ORM\OneToMany(mappedBy: 'resume', targetEntity: Hobby::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $hobbies;
+
     public function __construct()
     {
         $this->id = $this->createUuid();
@@ -87,6 +101,8 @@ class Resume implements EntityInterface
         $this->experiences = new ArrayCollection();
         $this->educations = new ArrayCollection();
         $this->skills = new ArrayCollection();
+        $this->languages = new ArrayCollection();
+        $this->hobbies = new ArrayCollection();
     }
 
     public function getId(): string
@@ -288,6 +304,64 @@ class Resume implements EntityInterface
         if ($this->skills->removeElement($skill)) {
             if ($skill->getResume() === $this) {
                 $skill->setResume(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Language>
+     */
+    public function getLanguages(): Collection
+    {
+        return $this->languages;
+    }
+
+    public function addLanguage(Language $language): self
+    {
+        if (!$this->languages->contains($language)) {
+            $this->languages->add($language);
+            $language->setResume($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLanguage(Language $language): self
+    {
+        if ($this->languages->removeElement($language)) {
+            if ($language->getResume() === $this) {
+                $language->setResume(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Hobby>
+     */
+    public function getHobbies(): Collection
+    {
+        return $this->hobbies;
+    }
+
+    public function addHobby(Hobby $hobby): self
+    {
+        if (!$this->hobbies->contains($hobby)) {
+            $this->hobbies->add($hobby);
+            $hobby->setResume($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHobby(Hobby $hobby): self
+    {
+        if ($this->hobbies->removeElement($hobby)) {
+            if ($hobby->getResume() === $this) {
+                $hobby->setResume(null);
             }
         }
 
