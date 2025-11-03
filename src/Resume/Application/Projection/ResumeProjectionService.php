@@ -38,16 +38,51 @@ readonly class ResumeProjectionService
             return null;
         }
 
-        $experiences = $this->experienceResource->findByUserId($userId);
-        $educations = $this->educationResource->findByUserId($userId);
-        $skills = $this->skillResource->findByUserId($userId);
-
         return [
             'resume' => $this->normalizeResume($resume),
-            'experiences' => array_map(fn (Experience $experience): array => $this->normalizeExperience($experience), $experiences),
-            'education' => array_map(fn (Education $education): array => $this->normalizeEducation($education), $educations),
-            'skills' => array_map(fn (Skill $skill): array => $this->normalizeSkill($skill), $skills),
+            'experiences' => $this->getExperiences($userId),
+            'education' => $this->getEducation($userId),
+            'skills' => $this->getSkills($userId),
         ];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getExperiences(UserId $userId): array
+    {
+        $experiences = $this->experienceResource->findByUserId($userId);
+
+        return array_map(
+            fn (Experience $experience): array => $this->normalizeExperience($experience),
+            $experiences
+        );
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getEducation(UserId $userId): array
+    {
+        $educations = $this->educationResource->findByUserId($userId);
+
+        return array_map(
+            fn (Education $education): array => $this->normalizeEducation($education),
+            $educations
+        );
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getSkills(UserId $userId): array
+    {
+        $skills = $this->skillResource->findByUserId($userId);
+
+        return array_map(
+            fn (Skill $skill): array => $this->normalizeSkill($skill),
+            $skills
+        );
     }
 
     private function normalizeResume(Resume $resume): array
