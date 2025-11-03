@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Resume\Transport\Controller\Api\Public;
 
+use App\General\Domain\ValueObject\UserId;
 use App\General\Infrastructure\ValueObject\SymfonyUser;
 use App\Resume\Domain\Repository\ResumeRepositoryInterface;
 use OpenApi\Attributes as OA;
@@ -36,7 +37,7 @@ class GetResumeController extends AbstractController
     )]
     public function __invoke(SymfonyUser $symfonyUser): JsonResponse
     {
-        $resume = $this->resumeRepository->findOneByUserId($symfonyUser->getUserIdentifier());
+        $resume = $this->resumeRepository->findOneByUserId(new UserId($symfonyUser->getUserIdentifier()));
 
         return new JsonResponse([
             'resume' => $resume
