@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5de2e3c4ffbc11a5d1bf7a5908c6e9a0",
+    "content-hash": "539be570e68987fb2004ceead6bd6f51",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -130,16 +130,16 @@
         },
         {
             "name": "bro-world/core-bundle",
-            "version": "v0.1.1",
+            "version": "v0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rami-aouinti/bro-world-core.git",
-                "reference": "4f56d42904474c1b0349c70b56a254804cab58d0"
+                "reference": "34730315be9a78036624a30446b5a491461b0ca3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rami-aouinti/bro-world-core/zipball/4f56d42904474c1b0349c70b56a254804cab58d0",
-                "reference": "4f56d42904474c1b0349c70b56a254804cab58d0",
+                "url": "https://api.github.com/repos/rami-aouinti/bro-world-core/zipball/34730315be9a78036624a30446b5a491461b0ca3",
+                "reference": "34730315be9a78036624a30446b5a491461b0ca3",
                 "shasum": ""
             },
             "require": {
@@ -182,9 +182,9 @@
             "homepage": "https://github.com/rami-aouinti/bro-world-core",
             "support": {
                 "issues": "https://github.com/rami-aouinti/bro-world-core/issues",
-                "source": "https://github.com/rami-aouinti/bro-world-core/tree/v0.1.1"
+                "source": "https://github.com/rami-aouinti/bro-world-core/tree/v0.1.2"
             },
-            "time": "2025-11-05T04:20:25+00:00"
+            "time": "2025-11-05T05:30:01+00:00"
         },
         {
             "name": "cocur/slugify",
