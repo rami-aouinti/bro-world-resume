@@ -11,10 +11,14 @@ use App\General\Domain\ValueObject\UserId;
 use App\General\Infrastructure\ValueObject\SymfonyUser;
 use App\Resume\Domain\Entity\Experience as ExperienceEntity;
 use App\Resume\Domain\Entity\Resume;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use Override;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Class ExperienceDto
+ */
 class ExperienceDto extends RestDto implements SymfonyUserAwareDtoInterface
 {
     protected static array $mappings = [
@@ -267,6 +271,9 @@ class ExperienceDto extends RestDto implements SymfonyUserAwareDtoInterface
         $experience->setUserId(new UserId($value));
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     protected function updateStartDate(ExperienceEntity $experience, ?string $value): void
     {
         if ($value === null) {
@@ -276,6 +283,9 @@ class ExperienceDto extends RestDto implements SymfonyUserAwareDtoInterface
         $experience->setStartDate(new DateTimeImmutable($value));
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     protected function updateEndDate(ExperienceEntity $experience, ?string $value): void
     {
         if ($value === null || $value === '') {

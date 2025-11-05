@@ -11,10 +11,14 @@ use App\General\Domain\ValueObject\UserId;
 use App\General\Infrastructure\ValueObject\SymfonyUser;
 use App\Resume\Domain\Entity\Education as EducationEntity;
 use App\Resume\Domain\Entity\Resume;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use Override;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Class EducationDto
+ */
 class EducationDto extends RestDto implements SymfonyUserAwareDtoInterface
 {
     protected static array $mappings = [
@@ -266,6 +270,9 @@ class EducationDto extends RestDto implements SymfonyUserAwareDtoInterface
         $education->setUserId(new UserId($value));
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     protected function updateStartDate(EducationEntity $education, ?string $value): void
     {
         if ($value === null || $value === '') {
@@ -277,6 +284,9 @@ class EducationDto extends RestDto implements SymfonyUserAwareDtoInterface
         $education->setStartDate(new DateTimeImmutable($value));
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     protected function updateEndDate(EducationEntity $education, ?string $value): void
     {
         if ($value === null || $value === '') {

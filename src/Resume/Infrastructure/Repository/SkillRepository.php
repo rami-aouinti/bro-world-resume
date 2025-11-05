@@ -11,6 +11,9 @@ use App\Resume\Domain\Entity\Skill;
 use App\Resume\Domain\Repository\SkillRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * Class SkillRepository
+ */
 class SkillRepository extends BaseRepository implements SkillRepositoryInterface
 {
     protected static string $entityName = Skill::class;

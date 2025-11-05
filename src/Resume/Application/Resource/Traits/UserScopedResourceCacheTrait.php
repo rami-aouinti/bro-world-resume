@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Resume\Application\Resource\Traits;
 
 use App\General\Domain\ValueObject\UserId;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
@@ -19,6 +20,9 @@ trait UserScopedResourceCacheTrait
 {
     private int $cacheTtlInSeconds = 300;
 
+    /**
+     * @throws InvalidArgumentException
+     */
     protected function rememberForCurrentUser(string $suffix, callable $callback): mixed
     {
         $userId = (string)$this->getCurrentUserId();
@@ -32,6 +36,9 @@ trait UserScopedResourceCacheTrait
         });
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     protected function invalidateCacheForUser(UserId|string $userId): void
     {
         $id = $userId instanceof UserId ? (string)$userId : $userId;

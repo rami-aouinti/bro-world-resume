@@ -14,6 +14,9 @@ use App\Resume\Domain\Entity\Resume;
 use Override;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Class LanguageDto
+ */
 class LanguageDto extends RestDto implements SymfonyUserAwareDtoInterface
 {
     protected static array $mappings = [

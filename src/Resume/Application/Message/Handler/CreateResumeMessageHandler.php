@@ -9,11 +9,14 @@ use App\Resume\Application\Resource\ResumeResource;
 use App\Resume\Domain\Entity\Resume;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * Class CreateResumeMessageHandler
+ */
 #[AsMessageHandler(bus: 'command_bus')]
-class CreateResumeMessageHandler
+readonly class CreateResumeMessageHandler
 {
     public function __construct(
-        private readonly ResumeResource $resource
+        private ResumeResource $resource
     ) {
     }
 

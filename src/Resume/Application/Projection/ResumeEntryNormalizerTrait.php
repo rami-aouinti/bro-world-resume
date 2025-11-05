@@ -12,6 +12,9 @@ use App\Resume\Domain\Entity\Project;
 use App\Resume\Domain\Entity\Resume;
 use App\Resume\Domain\Entity\Skill;
 
+/**
+ * Class ResumeEntryNormalizerTrait
+ */
 trait ResumeEntryNormalizerTrait
 {
     /**

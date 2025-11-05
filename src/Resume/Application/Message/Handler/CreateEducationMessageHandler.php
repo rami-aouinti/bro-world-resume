@@ -9,11 +9,14 @@ use App\Resume\Application\Resource\EducationResource;
 use App\Resume\Domain\Entity\Education;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * Class CreateEducationMessageHandler
+ */
 #[AsMessageHandler(bus: 'command_bus')]
-class CreateEducationMessageHandler
+readonly class CreateEducationMessageHandler
 {
     public function __construct(
-        private readonly EducationResource $resource
+        private EducationResource $resource
     ) {
     }
 

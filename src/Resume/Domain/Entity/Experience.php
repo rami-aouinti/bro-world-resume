@@ -14,7 +14,11 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Throwable;
 
+/**
+ * Class Experience
+ */
 #[ORM\Entity]
 #[ORM\Table(name: 'resume_experience')]
 class Experience implements EntityInterface
@@ -67,6 +71,9 @@ class Experience implements EntityInterface
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
+    /**
+     * @throws Throwable
+     */
     public function __construct()
     {
         $this->id = $this->createUuid();

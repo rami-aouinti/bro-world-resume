@@ -11,6 +11,9 @@ use App\Resume\Domain\Entity\Hobby;
 use App\Resume\Domain\Repository\HobbyRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * Class HobbyRepository
+ */
 class HobbyRepository extends BaseRepository implements HobbyRepositoryInterface
 {
     protected static string $entityName = Hobby::class;

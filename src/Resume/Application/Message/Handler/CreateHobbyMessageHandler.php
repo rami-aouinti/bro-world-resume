@@ -9,11 +9,14 @@ use App\Resume\Application\Resource\HobbyResource;
 use App\Resume\Domain\Entity\Hobby;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * Class CreateHobbyMessageHandler
+ */
 #[AsMessageHandler(bus: 'command_bus')]
-class CreateHobbyMessageHandler
+readonly class CreateHobbyMessageHandler
 {
     public function __construct(
-        private readonly HobbyResource $resource
+        private HobbyResource $resource
     ) {
     }
 

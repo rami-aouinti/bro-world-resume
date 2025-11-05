@@ -9,11 +9,14 @@ use App\Resume\Application\Resource\ProjectResource;
 use App\Resume\Domain\Entity\Project;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * Class CreateProjectMessageHandler
+ */
 #[AsMessageHandler(bus: 'command_bus')]
-class CreateProjectMessageHandler
+readonly class CreateProjectMessageHandler
 {
     public function __construct(
-        private readonly ProjectResource $resource
+        private ProjectResource $resource
     ) {
     }
 

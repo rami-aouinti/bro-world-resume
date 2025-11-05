@@ -6,13 +6,16 @@ namespace App\Resume\Application\Message\Command;
 
 use App\Resume\Application\DTO\Experience\ExperienceDto;
 
-class CreateExperienceMessage
+/**
+ * Class CreateExperienceMessage
+ */
+readonly class CreateExperienceMessage
 {
     public function __construct(
-        public readonly ExperienceDto $dto,
-        public readonly bool $flush,
-        public readonly bool $skipValidation,
-        public readonly ?string $entityManagerName
+        public ExperienceDto $dto,
+        public bool $flush,
+        public bool $skipValidation,
+        public ?string $entityManagerName
     ) {
     }
 }

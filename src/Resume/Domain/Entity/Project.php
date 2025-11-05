@@ -14,8 +14,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use Throwable;
+
 use function in_array;
 
+/**
+ * Class Project
+ */
 #[ORM\Entity]
 #[ORM\Table(name: 'resume_project')]
 class Project implements EntityInterface
@@ -63,6 +68,9 @@ class Project implements EntityInterface
     #[ORM\Column(type: Types::INTEGER)]
     private int $position = 0;
 
+    /**
+     * @throws Throwable
+     */
     public function __construct()
     {
         $this->id = $this->createUuid();

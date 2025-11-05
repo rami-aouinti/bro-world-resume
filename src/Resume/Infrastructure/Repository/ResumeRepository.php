@@ -12,6 +12,9 @@ use App\Resume\Domain\Repository\ResumeRepositoryInterface;
 use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * Class ResumeRepository
+ */
 class ResumeRepository extends BaseRepository implements ResumeRepositoryInterface
 {
     protected static string $entityName = Resume::class;

@@ -9,11 +9,14 @@ use App\Resume\Application\Resource\LanguageResource;
 use App\Resume\Domain\Entity\Language;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * Class CreateLanguageMessageHandler
+ */
 #[AsMessageHandler(bus: 'command_bus')]
-class CreateLanguageMessageHandler
+readonly class CreateLanguageMessageHandler
 {
     public function __construct(
-        private readonly LanguageResource $resource
+        private LanguageResource $resource
     ) {
     }
 

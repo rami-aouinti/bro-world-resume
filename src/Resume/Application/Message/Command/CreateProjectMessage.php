@@ -6,13 +6,16 @@ namespace App\Resume\Application\Message\Command;
 
 use App\Resume\Application\DTO\Project\ProjectDto;
 
-class CreateProjectMessage
+/**
+ * CreateProjectMessage
+ */
+readonly class CreateProjectMessage
 {
     public function __construct(
-        public readonly ProjectDto $dto,
-        public readonly bool $flush,
-        public readonly bool $skipValidation,
-        public readonly ?string $entityManagerName
+        public ProjectDto $dto,
+        public bool $flush,
+        public bool $skipValidation,
+        public ?string $entityManagerName
     ) {
     }
 }

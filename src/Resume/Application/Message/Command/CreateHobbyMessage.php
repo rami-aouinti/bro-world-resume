@@ -6,13 +6,16 @@ namespace App\Resume\Application\Message\Command;
 
 use App\Resume\Application\DTO\Hobby\HobbyDto;
 
-class CreateHobbyMessage
+/**
+ * Class CreateHobbyMessage
+ */
+readonly class CreateHobbyMessage
 {
     public function __construct(
-        public readonly HobbyDto $dto,
-        public readonly bool $flush,
-        public readonly bool $skipValidation,
-        public readonly ?string $entityManagerName
+        public HobbyDto $dto,
+        public bool $flush,
+        public bool $skipValidation,
+        public ?string $entityManagerName
     ) {
     }
 }

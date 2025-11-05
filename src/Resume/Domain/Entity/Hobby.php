@@ -13,7 +13,11 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Throwable;
 
+/**
+ * Class Hobby
+ */
 #[ORM\Entity]
 #[ORM\Table(name: 'resume_hobby')]
 class Hobby implements EntityInterface
@@ -45,6 +49,9 @@ class Hobby implements EntityInterface
     #[ORM\Column(type: Types::INTEGER)]
     private int $position = 0;
 
+    /**
+     * @throws Throwable
+     */
     public function __construct()
     {
         $this->id = $this->createUuid();

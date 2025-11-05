@@ -11,6 +11,9 @@ use App\Resume\Domain\Entity\Project;
 use App\Resume\Domain\Repository\ProjectRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * Class ProjectRepository
+ */
 class ProjectRepository extends BaseRepository implements ProjectRepositoryInterface
 {
     protected static string $entityName = Project::class;

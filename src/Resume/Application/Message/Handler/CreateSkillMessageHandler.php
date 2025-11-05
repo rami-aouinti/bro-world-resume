@@ -9,11 +9,14 @@ use App\Resume\Application\Resource\SkillResource;
 use App\Resume\Domain\Entity\Skill;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * Class CreateSkillMessageHandler
+ */
 #[AsMessageHandler(bus: 'command_bus')]
-class CreateSkillMessageHandler
+readonly class CreateSkillMessageHandler
 {
     public function __construct(
-        private readonly SkillResource $resource
+        private SkillResource $resource
     ) {
     }
 

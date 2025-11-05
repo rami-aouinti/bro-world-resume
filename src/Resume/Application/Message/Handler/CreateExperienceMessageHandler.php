@@ -9,11 +9,14 @@ use App\Resume\Application\Resource\ExperienceResource;
 use App\Resume\Domain\Entity\Experience;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * @package App\Resume\Application\Message\Handler
+ */
 #[AsMessageHandler(bus: 'command_bus')]
-class CreateExperienceMessageHandler
+readonly class CreateExperienceMessageHandler
 {
     public function __construct(
-        private readonly ExperienceResource $resource
+        private ExperienceResource $resource
     ) {
     }
 

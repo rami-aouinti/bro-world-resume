@@ -14,6 +14,9 @@ use App\Resume\Domain\Entity\Skill as SkillEntity;
 use Override;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Class SkillDto
+ */
 class SkillDto extends RestDto implements SymfonyUserAwareDtoInterface
 {
     protected static array $mappings = [

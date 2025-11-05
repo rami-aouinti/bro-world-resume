@@ -11,6 +11,9 @@ use App\Resume\Domain\Entity\Experience;
 use App\Resume\Domain\Repository\ExperienceRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * Class ExperienceRepository
+ */
 class ExperienceRepository extends BaseRepository implements ExperienceRepositoryInterface
 {
     protected static string $entityName = Experience::class;

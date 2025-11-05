@@ -8,6 +8,9 @@ use App\General\Domain\Repository\Interfaces\BaseRepositoryInterface;
 use App\General\Domain\ValueObject\UserId;
 use App\Resume\Domain\Entity\Project;
 
+/**
+ * @package App\Resume\Domain\Repository
+ */
 interface ProjectRepositoryInterface extends BaseRepositoryInterface
 {
     /**

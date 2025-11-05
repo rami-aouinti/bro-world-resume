@@ -11,6 +11,9 @@ use App\Resume\Domain\Entity\Language;
 use App\Resume\Domain\Repository\LanguageRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * Class LanguageRepository
+ */
 class LanguageRepository extends BaseRepository implements LanguageRepositoryInterface
 {
     protected static string $entityName = Language::class;

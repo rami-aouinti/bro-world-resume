@@ -6,13 +6,16 @@ namespace App\Resume\Application\Message\Command;
 
 use App\Resume\Application\DTO\Resume\ResumeDto;
 
-class CreateResumeMessage
+/**
+ * Class CreateResumeMessage
+ */
+readonly class CreateResumeMessage
 {
     public function __construct(
-        public readonly ResumeDto $dto,
-        public readonly bool $flush,
-        public readonly bool $skipValidation,
-        public readonly ?string $entityManagerName
+        public ResumeDto $dto,
+        public bool $flush,
+        public bool $skipValidation,
+        public ?string $entityManagerName
     ) {
     }
 }
