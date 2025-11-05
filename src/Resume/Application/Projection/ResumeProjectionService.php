@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Resume\Application\Projection;
 
-use App\General\Domain\ValueObject\UserId;
+use Bro\WorldCoreBundle\Domain\ValueObject\UserId;
 use App\Resume\Application\Projection\ResumeEntryNormalizerTrait;
 use App\Resume\Application\Resource\EducationResource;
 use App\Resume\Application\Resource\ExperienceResource;

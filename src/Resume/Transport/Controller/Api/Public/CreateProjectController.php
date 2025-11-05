@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Resume\Transport\Controller\Api\Public;
 
-use App\General\Infrastructure\ValueObject\SymfonyUser;
+use Bro\WorldCoreBundle\Infrastructure\ValueObject\SymfonyUser;
 use App\Resume\Application\DTO\Project\ProjectDto;
 use App\Resume\Application\Projection\ResumeEntryNormalizerTrait;
 use App\Resume\Application\Resource\ProjectResource;

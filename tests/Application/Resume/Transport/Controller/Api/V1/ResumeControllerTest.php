@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Application\Resume\Transport\Controller\Api\V1;
 
-use App\General\Infrastructure\Service\LexikJwtAuthenticatorService;
+use Bro\WorldCoreBundle\Infrastructure\Service\LexikJwtAuthenticatorService;
 use App\Tests\TestCase\WebTestCase;
 use Ramsey\Uuid\Uuid;
 

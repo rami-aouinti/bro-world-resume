@@ -9,7 +9,7 @@ use App\Resume\Application\Projection\ResumeEntryNormalizerTrait;
 use App\Resume\Application\Resource\SkillResource;
 use App\Resume\Application\Service\SetupResume;
 use App\Resume\Domain\Entity\Skill;
-use App\General\Infrastructure\ValueObject\SymfonyUser;
+use Bro\WorldCoreBundle\Infrastructure\ValueObject\SymfonyUser;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use OpenApi\Attributes as OA;

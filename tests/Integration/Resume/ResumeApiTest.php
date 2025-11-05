@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Resume;
 
-use App\General\Domain\ValueObject\UserId;
-use App\General\Infrastructure\Service\LexikJwtAuthenticatorService;
+use Bro\WorldCoreBundle\Domain\ValueObject\UserId;
+use Bro\WorldCoreBundle\Infrastructure\Service\LexikJwtAuthenticatorService;
 use App\Resume\Domain\Repository\ResumeRepositoryInterface;
 use App\Resume\Infrastructure\DataFixtures\ResumeFixtures;
 use App\Tests\TestCase\WebTestCase;

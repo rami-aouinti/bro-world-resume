@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Resume\Application\DTO\Hobby;
 
-use App\General\Application\DTO\Interfaces\SymfonyUserAwareDtoInterface;
-use App\General\Application\DTO\RestDto;
-use App\General\Domain\Entity\Interfaces\EntityInterface;
-use App\General\Domain\ValueObject\UserId;
-use App\General\Infrastructure\ValueObject\SymfonyUser;
+use Bro\WorldCoreBundle\Application\DTO\Interfaces\SymfonyUserAwareDtoInterface;
+use Bro\WorldCoreBundle\Application\DTO\RestDto;
+use Bro\WorldCoreBundle\Domain\Entity\Interfaces\EntityInterface;
+use Bro\WorldCoreBundle\Domain\ValueObject\UserId;
+use Bro\WorldCoreBundle\Infrastructure\ValueObject\SymfonyUser;
 use App\Resume\Domain\Entity\Hobby as HobbyEntity;
 use App\Resume\Domain\Entity\Resume;
 use Override;

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Resume\Application\Resource;
 
-use App\General\Application\DTO\Interfaces\RestDtoInterface;
-use App\General\Application\Rest\RestResource;
-use App\General\Application\Service\AuthenticatorServiceInterface;
-use App\General\Domain\Entity\Interfaces\EntityInterface;
-use App\General\Domain\ValueObject\UserId;
+use Bro\WorldCoreBundle\Application\DTO\Interfaces\RestDtoInterface;
+use Bro\WorldCoreBundle\Application\Rest\RestResource;
+use Bro\WorldCoreBundle\Application\Service\AuthenticatorServiceInterface;
+use Bro\WorldCoreBundle\Domain\Entity\Interfaces\EntityInterface;
+use Bro\WorldCoreBundle\Domain\ValueObject\UserId;
 use App\Resume\Application\DTO\Education\EducationDto;
 use App\Resume\Application\Message\Command\CreateEducationMessage;
 use App\Resume\Application\Resource\Traits\UserScopedResourceCacheTrait;
@@ -17,6 +17,7 @@ use App\Resume\Domain\Entity\Resume;
 use App\Resume\Domain\Repository\EducationRepositoryInterface;
 use App\Resume\Domain\Repository\ResumeRepositoryInterface;
 use Override;
+use Psr\Cache\InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -165,24 +166,36 @@ class EducationResource extends RestResource
         }
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     #[Override]
     public function afterCreate(RestDtoInterface $restDto, EntityInterface $entity): void
     {
         $this->invalidateEducationCache($entity);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     #[Override]
     public function afterUpdate(string &$id, RestDtoInterface $restDto, EntityInterface $entity): void
     {
         $this->invalidateEducationCache($entity);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     #[Override]
-    public function afterPatch(string &$id, RestDtoInterface $restDto, EntityInterface $entity): void
+    public function afterPatch(string &$id, RestDtoInterface $dto, EntityInterface $entity): void
     {
         $this->invalidateEducationCache($entity);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     #[Override]
     public function afterDelete(string &$id, EntityInterface $entity): void
     {
@@ -248,6 +261,9 @@ class EducationResource extends RestResource
         return new UserId($symfonyUser->getUserIdentifier());
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function invalidateEducationCache(EntityInterface $entity): void
     {
         if (!$entity instanceof Education) {

@@ -8,7 +8,7 @@ use App\Resume\Application\DTO\Hobby\HobbyDto;
 use App\Resume\Application\Projection\ResumeEntryNormalizerTrait;
 use App\Resume\Application\Resource\HobbyResource;
 use App\Resume\Domain\Entity\Hobby;
-use App\General\Infrastructure\ValueObject\SymfonyUser;
+use Bro\WorldCoreBundle\Infrastructure\ValueObject\SymfonyUser;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +17,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+
+use Throwable;
 
 use function array_key_exists;
 
@@ -35,6 +37,9 @@ class EditHobbyController extends AbstractController
     ) {
     }
 
+    /**
+     * @throws Throwable
+     */
     #[Route('/{id}/edit', name: 'patch', methods: ['PATCH'])]
     #[OA\Patch(
         summary: 'Edit hobby entry',

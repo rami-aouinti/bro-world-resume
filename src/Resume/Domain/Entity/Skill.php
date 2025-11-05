@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Resume\Domain\Entity;
 
-use App\General\Domain\Entity\Interfaces\EntityInterface;
-use App\General\Domain\Entity\Traits\Timestampable;
-use App\General\Domain\Entity\Traits\Uuid;
-use App\General\Domain\Rest\UuidHelper;
-use App\General\Domain\ValueObject\UserId;
+use Bro\WorldCoreBundle\Domain\Entity\Interfaces\EntityInterface;
+use Bro\WorldCoreBundle\Domain\Entity\Traits\Timestampable;
+use Bro\WorldCoreBundle\Domain\Entity\Traits\Uuid;
+use Bro\WorldCoreBundle\Domain\Rest\UuidHelper;
+use Bro\WorldCoreBundle\Domain\ValueObject\UserId;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;

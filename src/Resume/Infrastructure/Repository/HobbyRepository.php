@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Resume\Infrastructure\Repository;
 
-use App\General\Domain\Rest\UuidHelper;
-use App\General\Domain\ValueObject\UserId;
-use App\General\Infrastructure\Repository\BaseRepository;
+use Bro\WorldCoreBundle\Domain\Rest\UuidHelper;
+use Bro\WorldCoreBundle\Domain\ValueObject\UserId;
+use Bro\WorldCoreBundle\Infrastructure\Repository\BaseRepository;
 use App\Resume\Domain\Entity\Hobby;
 use App\Resume\Domain\Repository\HobbyRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;

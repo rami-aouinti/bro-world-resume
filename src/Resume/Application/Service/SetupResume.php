@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Resume\Application\Service;
 
-use App\General\Domain\ValueObject\UserId;
-use App\General\Infrastructure\ValueObject\SymfonyUser;
+use Bro\WorldCoreBundle\Domain\ValueObject\UserId;
+use Bro\WorldCoreBundle\Infrastructure\ValueObject\SymfonyUser;
 use App\Resume\Domain\Entity\Resume;
 use App\Resume\Domain\Repository\ResumeRepositoryInterface;
 use Doctrine\ORM\Exception\ORMException;

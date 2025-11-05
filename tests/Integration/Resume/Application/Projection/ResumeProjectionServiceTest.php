@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Resume\Application\Projection;
 
-use App\General\Domain\ValueObject\UserId;
+use Bro\WorldCoreBundle\Domain\ValueObject\UserId;
 use App\Resume\Application\Projection\ResumeProjectionService;
 use App\Resume\Infrastructure\DataFixtures\ResumeFixtures;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

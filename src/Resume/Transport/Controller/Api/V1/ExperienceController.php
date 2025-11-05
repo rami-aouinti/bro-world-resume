@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Resume\Transport\Controller\Api\V1;
 
-use App\General\Transport\Rest\Controller;
-use App\General\Transport\Rest\Traits\Actions\Anon\CountAction;
-use App\General\Transport\Rest\Traits\Actions\Anon\CreateAction;
-use App\General\Transport\Rest\Traits\Actions\Anon\DeleteAction;
-use App\General\Transport\Rest\Traits\Actions\Anon\FindAction;
-use App\General\Transport\Rest\Traits\Actions\Anon\FindOneAction;
-use App\General\Transport\Rest\Traits\Actions\Anon\IdsAction;
-use App\General\Transport\Rest\Traits\Actions\Anon\PatchAction;
-use App\General\Transport\Rest\Traits\Actions\Anon\UpdateAction;
+use Bro\WorldCoreBundle\Transport\Rest\Controller;
+use Bro\WorldCoreBundle\Transport\Rest\Traits\Actions\Anon\CountAction;
+use Bro\WorldCoreBundle\Transport\Rest\Traits\Actions\Anon\CreateAction;
+use Bro\WorldCoreBundle\Transport\Rest\Traits\Actions\Anon\DeleteAction;
+use Bro\WorldCoreBundle\Transport\Rest\Traits\Actions\Anon\FindAction;
+use Bro\WorldCoreBundle\Transport\Rest\Traits\Actions\Anon\FindOneAction;
+use Bro\WorldCoreBundle\Transport\Rest\Traits\Actions\Anon\IdsAction;
+use Bro\WorldCoreBundle\Transport\Rest\Traits\Actions\Anon\PatchAction;
+use Bro\WorldCoreBundle\Transport\Rest\Traits\Actions\Anon\UpdateAction;
 use App\Resume\Application\Resource\ExperienceResource;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;

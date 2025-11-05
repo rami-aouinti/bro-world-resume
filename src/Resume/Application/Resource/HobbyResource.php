@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Resume\Application\Resource;
 
-use App\General\Application\DTO\Interfaces\RestDtoInterface;
-use App\General\Application\Rest\RestResource;
-use App\General\Application\Service\AuthenticatorServiceInterface;
-use App\General\Domain\Entity\Interfaces\EntityInterface;
-use App\General\Domain\ValueObject\UserId;
+use Bro\WorldCoreBundle\Application\DTO\Interfaces\RestDtoInterface;
+use Bro\WorldCoreBundle\Application\Rest\RestResource;
+use Bro\WorldCoreBundle\Application\Service\AuthenticatorServiceInterface;
+use Bro\WorldCoreBundle\Domain\Entity\Interfaces\EntityInterface;
+use Bro\WorldCoreBundle\Domain\ValueObject\UserId;
 use App\Resume\Application\DTO\Hobby\HobbyDto;
 use App\Resume\Application\Message\Command\CreateHobbyMessage;
 use App\Resume\Application\Resource\Traits\UserScopedResourceCacheTrait;

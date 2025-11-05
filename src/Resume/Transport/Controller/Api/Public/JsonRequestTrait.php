@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Resume\Transport\Controller\Api\Public;
 
-use App\General\Domain\Utils\JSON;
+use Bro\WorldCoreBundle\Domain\Utils\JSON;
 use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;

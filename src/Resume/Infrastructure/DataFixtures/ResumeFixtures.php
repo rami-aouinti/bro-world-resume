@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Resume\Infrastructure\DataFixtures;
 
-use App\General\Domain\Rest\UuidHelper;
-use App\General\Domain\ValueObject\UserId;
+use Bro\WorldCoreBundle\Domain\Rest\UuidHelper;
+use Bro\WorldCoreBundle\Domain\ValueObject\UserId;
 use App\Resume\Domain\Entity\Education;
 use App\Resume\Domain\Entity\Experience;
 use App\Resume\Domain\Entity\Hobby;

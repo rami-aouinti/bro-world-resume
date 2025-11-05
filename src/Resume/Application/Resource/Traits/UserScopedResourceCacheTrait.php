@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Resume\Application\Resource\Traits;
 
-use App\General\Domain\ValueObject\UserId;
+use Bro\WorldCoreBundle\Domain\ValueObject\UserId;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;

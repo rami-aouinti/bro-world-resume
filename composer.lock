@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8906cc6137a833440d11b8ada804444",
+    "content-hash": "5de2e3c4ffbc11a5d1bf7a5908c6e9a0",
     "packages": [
         {
             "name": "beberlei/doctrineextensions",
@@ -127,6 +127,64 @@
                 }
             ],
             "time": "2025-08-29T12:40:03+00:00"
+        },
+        {
+            "name": "bro-world/core-bundle",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rami-aouinti/bro-world-core.git",
+                "reference": "4f56d42904474c1b0349c70b56a254804cab58d0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rami-aouinti/bro-world-core/zipball/4f56d42904474c1b0349c70b56a254804cab58d0",
+                "reference": "4f56d42904474c1b0349c70b56a254804cab58d0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "ramsey/uuid": "^4.6",
+                "ramsey/uuid-doctrine": "^2.1",
+                "symfony/config": "^7.2",
+                "symfony/framework-bundle": "^7.2",
+                "symfony/messenger": "^7.2",
+                "symfony/serializer": "^7.2",
+                "symfony/validator": "^7.2"
+            },
+            "suggest": {
+                "doctrine/orm": "^2.14 || ^3.0"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Bro\\WorldCoreBundle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Rami Aouinti",
+                    "email": "rami.aouinti@gmail.com",
+                    "homepage": "https://github.com/rami-aouinti",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Core utilities & services for Bro World projects",
+            "homepage": "https://github.com/rami-aouinti/bro-world-core",
+            "support": {
+                "issues": "https://github.com/rami-aouinti/bro-world-core/issues",
+                "source": "https://github.com/rami-aouinti/bro-world-core/tree/v0.1.1"
+            },
+            "time": "2025-11-05T04:20:25+00:00"
         },
         {
             "name": "cocur/slugify",
@@ -10752,12 +10810,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "d2e1583e5f89f53f7882861c1639c14c9a154585"
+                "reference": "19966d2f97bbc444bb176432754e33256a7d45bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/d2e1583e5f89f53f7882861c1639c14c9a154585",
-                "reference": "d2e1583e5f89f53f7882861c1639c14c9a154585",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/19966d2f97bbc444bb176432754e33256a7d45bf",
+                "reference": "19966d2f97bbc444bb176432754e33256a7d45bf",
                 "shasum": ""
             },
             "conflict": {
@@ -11192,7 +11250,7 @@
                 "maikuolan/phpmussel": ">=1,<1.6",
                 "mainwp/mainwp": "<=4.4.3.3",
                 "manogi/nova-tiptap": "<=3.2.6",
-                "mantisbt/mantisbt": "<=2.26.3",
+                "mantisbt/mantisbt": "<2.27.2",
                 "marcwillmann/turn": "<0.3.3",
                 "marshmallow/nova-tiptap": "<5.7",
                 "matomo/matomo": "<1.11",
@@ -11280,7 +11338,7 @@
                 "open-web-analytics/open-web-analytics": "<1.8.1",
                 "opencart/opencart": ">=0",
                 "openid/php-openid": "<2.3",
-                "openmage/magento-lts": "<20.12.3",
+                "openmage/magento-lts": "<20.16",
                 "opensolutions/vimbadmin": "<=3.0.15",
                 "opensource-workshop/connect-cms": "<1.8.7|>=2,<2.4.7",
                 "orchid/platform": ">=8,<14.43",
@@ -11735,7 +11793,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-10-30T18:07:16+00:00"
+            "time": "2025-11-03T21:05:38+00:00"
         },
         {
             "name": "symfony/browser-kit",
