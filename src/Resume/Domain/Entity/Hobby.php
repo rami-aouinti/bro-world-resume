@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Resume\Domain\Entity;
 
 use Bro\WorldCoreBundle\Domain\Entity\Interfaces\EntityInterface;
+use Bro\WorldCoreBundle\Domain\Entity\Traits\PositionTrait;
 use Bro\WorldCoreBundle\Domain\Entity\Traits\Timestampable;
 use Bro\WorldCoreBundle\Domain\Entity\Traits\Uuid;
 use Bro\WorldCoreBundle\Domain\Rest\UuidHelper;
@@ -24,6 +25,7 @@ class Hobby implements EntityInterface
 {
     use Timestampable;
     use Uuid;
+    use PositionTrait;
 
     #[ORM\Id]
     #[ORM\Column(type: 'uuid_binary_ordered_time')]
@@ -45,9 +47,6 @@ class Hobby implements EntityInterface
 
     #[ORM\Column(type: Types::STRING, length: 50, nullable: true)]
     private ?string $level = null;
-
-    #[ORM\Column(type: Types::INTEGER)]
-    private int $position = 0;
 
     /**
      * @throws Throwable
@@ -123,18 +122,6 @@ class Hobby implements EntityInterface
     public function setLevel(?string $level): self
     {
         $this->level = $level;
-
-        return $this;
-    }
-
-    public function getPosition(): int
-    {
-        return $this->position;
-    }
-
-    public function setPosition(int $position): self
-    {
-        $this->position = $position;
 
         return $this;
     }

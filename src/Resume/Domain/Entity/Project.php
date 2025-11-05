@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Resume\Domain\Entity;
 
 use Bro\WorldCoreBundle\Domain\Entity\Interfaces\EntityInterface;
+use Bro\WorldCoreBundle\Domain\Entity\Traits\PositionTrait;
 use Bro\WorldCoreBundle\Domain\Entity\Traits\Timestampable;
 use Bro\WorldCoreBundle\Domain\Entity\Traits\Uuid;
 use Bro\WorldCoreBundle\Domain\Rest\UuidHelper;
@@ -27,6 +28,7 @@ class Project implements EntityInterface
 {
     use Timestampable;
     use Uuid;
+    use PositionTrait;
 
     public const string STATUS_PUBLIC = 'public';
     public const string STATUS_PRIVATE = 'private';
@@ -64,9 +66,6 @@ class Project implements EntityInterface
     #[ORM\Column(type: Types::STRING, length: 20)]
     #[Assert\Choice(choices: [self::STATUS_PUBLIC, self::STATUS_PRIVATE])]
     private string $status = self::STATUS_PUBLIC;
-
-    #[ORM\Column(type: Types::INTEGER)]
-    private int $position = 0;
 
     /**
      * @throws Throwable
@@ -184,18 +183,6 @@ class Project implements EntityInterface
         }
 
         $this->status = $status;
-
-        return $this;
-    }
-
-    public function getPosition(): int
-    {
-        return $this->position;
-    }
-
-    public function setPosition(int $position): self
-    {
-        $this->position = $position;
 
         return $this;
     }

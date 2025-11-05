@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Resume\Domain\Entity;
 
 use Bro\WorldCoreBundle\Domain\Entity\Interfaces\EntityInterface;
+use Bro\WorldCoreBundle\Domain\Entity\Traits\Period;
+use Bro\WorldCoreBundle\Domain\Entity\Traits\PositionTrait;
 use Bro\WorldCoreBundle\Domain\Entity\Traits\Timestampable;
 use Bro\WorldCoreBundle\Domain\Entity\Traits\Uuid;
 use Bro\WorldCoreBundle\Domain\Rest\UuidHelper;
@@ -25,6 +27,8 @@ class Education implements EntityInterface
 {
     use Timestampable;
     use Uuid;
+    use Period;
+    use PositionTrait;
 
     #[ORM\Id]
     #[ORM\Column(type: 'uuid_binary_ordered_time')]
@@ -54,17 +58,8 @@ class Education implements EntityInterface
     #[Assert\Url]
     private ?string $schoolLogo = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
-    private ?DateTimeImmutable $startDate = null;
-
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
-    private ?DateTimeImmutable $endDate = null;
-
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isCurrent = false;
-
-    #[ORM\Column(type: Types::INTEGER)]
-    private int $position = 0;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
@@ -171,30 +166,6 @@ class Education implements EntityInterface
         return $this;
     }
 
-    public function getStartDate(): ?DateTimeImmutable
-    {
-        return $this->startDate;
-    }
-
-    public function setStartDate(?DateTimeImmutable $startDate): self
-    {
-        $this->startDate = $startDate;
-
-        return $this;
-    }
-
-    public function getEndDate(): ?DateTimeImmutable
-    {
-        return $this->endDate;
-    }
-
-    public function setEndDate(?DateTimeImmutable $endDate): self
-    {
-        $this->endDate = $endDate;
-
-        return $this;
-    }
-
     public function isCurrent(): bool
     {
         return $this->isCurrent;
@@ -207,18 +178,6 @@ class Education implements EntityInterface
         if ($isCurrent) {
             $this->endDate = null;
         }
-
-        return $this;
-    }
-
-    public function getPosition(): int
-    {
-        return $this->position;
-    }
-
-    public function setPosition(int $position): self
-    {
-        $this->position = $position;
 
         return $this;
     }
